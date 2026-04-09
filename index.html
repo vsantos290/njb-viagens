@@ -943,28 +943,27 @@ async function atualizarTudo() {
     showLd();
   }
   try {
-    const [rc,rv,rd,rdist,rkpis,rviag] = await Promise.all([
-      api('getCondutores'), api('getVeiculos'), api('getDestinos'),
-      api('getDistancias'), api('getKPIs',{}), api('getViagens',{})
-    ]);
-    if(rc.success)    S.condutores  = rc.data;
-    if(rv.success)    S.veiculos    = rv.data;
-    if(rd.success)    S.destinos    = rd.data;
-    if(rdist.success) S.distancias  = rdist.data;
-    if(rkpis.success) S.kpis        = rkpis.data;
-    if(rviag.success) S.viagens     = rviag.data;
-    if(rc.code==='UNAUTHORIZED'||rv.code==='UNAUTHORIZED') { fazerLogout(); return; }
-    // Salva cache para próxima abertura
-    localStorage.setItem('njb_cache', JSON.stringify({
-      condutores:S.condutores, veiculos:S.veiculos, destinos:S.destinos,
-      distancias:S.distancias, kpis:S.kpis, viagens:S.viagens
-    }));
-    renderDashboard();
-    popularSelects();
-    document.getElementById('last-update').textContent = new Date().toLocaleString('pt-BR');
-    if (S.user?.perfil==='ADMIN' && S.kpis?.solicitacoes) {
-      const nb = document.getElementById('nb-aprovacao');
-      if (nb) nb.textContent = S.kpis.solicitacoes.pendentes || '0';
+    // Uma única chamada ao backend em vez de 6 — muito mais rápido
+    const r = await api('getTudo', {});
+    if (r.success) {
+      S.condutores = r.data.condutores || [];
+      S.veiculos   = r.data.veiculos   || [];
+      S.destinos   = r.data.destinos   || [];
+      S.distancias = r.data.distancias || [];
+      S.kpis       = r.data.kpis       || {};
+      S.viagens    = r.data.viagens    || [];
+      if (r.code === 'UNAUTHORIZED') { fazerLogout(); return; }
+      localStorage.setItem('njb_cache', JSON.stringify({
+        condutores:S.condutores, veiculos:S.veiculos, destinos:S.destinos,
+        distancias:S.distancias, kpis:S.kpis, viagens:S.viagens
+      }));
+      renderDashboard();
+      popularSelects();
+      document.getElementById('last-update').textContent = new Date().toLocaleString('pt-BR');
+      if (S.user?.perfil==='ADMIN' && S.kpis?.solicitacoes) {
+        const nb = document.getElementById('nb-aprovacao');
+        if (nb) nb.textContent = S.kpis.solicitacoes.pendentes || '0';
+      }
     }
   } catch(e) { toast('Erro ao conectar. Verifique a URL.','error'); }
   finally { btn.classList.remove('loading'); hideLd(); }
@@ -997,8 +996,8 @@ function renderDashboard() {
       </div>`).join('');
   }
 
-  // Próximas viagens
-  const proximas = S.viagens.filter(v=>v.status!=='CANCELADA'&&v.status!=='REALIZADA').slice(0,6);
+  // Próximas viagens - só AGENDADAS e EM ANDAMENTO
+  const proximas = S.viagens.filter(v=>v.status==='AGENDADA'||v.status==='EM ANDAMENTO').slice(0,6);
   const isAdmin = S.user?.perfil==='ADMIN';
   document.getElementById('tb-proximas').innerHTML = proximas.length ? proximas.map(v=>`
     <tr>
@@ -1066,11 +1065,12 @@ async function carregarMinhasSolicitacoes() {
 }
 
 async function carregarSolicitacoesAdmin() {
+  const statusVal = document.getElementById('fil-sol-status')?.value || '';
   const params = {
-    status: document.getElementById('fil-sol-status')?.value || 'PENDENTE',
     dataInicio: document.getElementById('fil-sol-di')?.value || '',
     dataFim: document.getElementById('fil-sol-df')?.value || '',
   };
+  if (statusVal) params.status = statusVal;
   showLd();
   const r = await api('getSolicitacoes', params).catch(()=>({success:false}));
   hideLd();
@@ -1172,11 +1172,18 @@ function renderCalendario() {
   document.getElementById('cal-names').innerHTML = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'].map(d=>`<div class="cal-dn">${d}</div>`).join('');
   const primeiro=new Date(ano,mes,1).getDay(), diasMes=new Date(ano,mes+1,0).getDate(), diasAnt=new Date(ano,mes,0).getDate();
   const hoje=new Date(), hojeStr=`${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
+  // Indexa viagens por data para busca rápida
+  const viagensPorData = {};
+  S.viagens.forEach(v => {
+    if (!v.data) return;
+    if (!viagensPorData[v.data]) viagensPorData[v.data] = [];
+    viagensPorData[v.data].push(v);
+  });
   let html='';
   for(let i=0;i<primeiro;i++) html+=`<div class="cal-day om"><div class="cal-dn2">${diasAnt-primeiro+1+i}</div></div>`;
   for(let d=1;d<=diasMes;d++){
     const ds=`${String(d).padStart(2,'0')}/${String(mes+1).padStart(2,'0')}/${ano}`;
-    const vd=S.viagens.filter(v=>v.data===ds);
+    const vd=viagensPorData[ds]||[];
     html+=`<div class="cal-day${ds===hojeStr?' today':''}${vd.length?' hv':''}" onclick="abrirDia('${ds}')">
       <div class="cal-dn2">${d}</div>
       ${vd.slice(0,3).map((v,i)=>`<div class="cal-ev${i===1?' o':i===2?' a':''}">${v.hora} ${v.destino}</div>`).join('')}
