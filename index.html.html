@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NJB — Viagens Corporativas</title>
+<style>
+:root {
+  --verde-escuro:#1a3a2a; --verde-medio:#2e7d52; --verde-claro:#4d9e72;
+  --verde-bg:#e8f4ee; --laranja:#e67e22; --vermelho:#c0392b; --azul:#2980b9;
+  --cinza-bg:#f4f5f7; --cinza-borda:#e2e8e4; --cinza-texto:#6b7c74;
+  --branco:#ffffff; --texto-principal:#1a3a2a; --texto-secundario:#2c3e30;
+  --sombra:0 2px 12px rgba(26,58,42,.10); --radius:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cinza-bg);color:var(--texto-principal);min-height:100vh;}
+
+/* ── LOGIN ───────────────────────────────── */
+#screen-login{display:flex;min-height:100vh;}
+.login-left{flex:1;background:var(--verde-escuro);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;position:relative;overflow:hidden;}
+.login-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 70%,rgba(46,125,82,.4) 0%,transparent 70%);}
+.login-brand{position:relative;z-index:1;text-align:center;}
+.login-logo{width:72px;height:72px;background:var(--verde-medio);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;margin:0 auto 20px;letter-spacing:1px;}
+.login-brand h1{color:#fff;font-size:28px;font-weight:800;margin-bottom:8px;}
+.login-brand p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.6;max-width:300px;}
+.login-features{position:relative;z-index:1;margin-top:40px;display:flex;flex-direction:column;gap:14px;}
+.login-feat{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.8);font-size:13px;}
+.login-feat-icon{width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.login-right{width:440px;background:var(--branco);display:flex;align-items:center;justify-content:center;padding:48px 40px;}
+.login-form-wrap{width:100%;}
+.login-form-wrap h2{font-size:24px;font-weight:800;color:var(--verde-escuro);margin-bottom:6px;}
+.login-form-wrap p{font-size:13px;color:var(--cinza-texto);margin-bottom:32px;}
+.form-group{margin-bottom:18px;}
+label{display:block;font-size:12px;font-weight:700;color:var(--texto-principal);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+input,select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--cinza-borda);border-radius:9px;font-size:14px;color:var(--texto-principal);background:var(--branco);outline:none;transition:.2s;font-family:inherit;}
+input:focus,select:focus,textarea:focus{border-color:var(--verde-medio);box-shadow:0 0 0 3px rgba(46,125,82,.1);}
+input::placeholder{color:#bbb;}
+.btn-login{width:100%;padding:13px;background:var(--verde-escuro);color:#fff;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-login:hover{background:var(--verde-medio);}
+.login-error{background:#fde8e8;color:var(--vermelho);border:1px solid #f5b7b7;border-radius:9px;padding:12px 14px;font-size:13px;margin-bottom:16px;display:none;}
+.login-error.show{display:block;}
+@media(max-width:700px){.login-left{display:none;}.login-right{width:100%;}}
+
+/* ── SIDEBAR ─────────────────────────────── */
+#screen-app{display:none;}
+#screen-app.active{display:flex;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;width:224px;height:100vh;background:var(--verde-escuro);display:flex;flex-direction:column;z-index:100;transition:.3s;}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
+.logo-box{display:flex;align-items:center;gap:10px;}
+.logo-sq{background:var(--verde-medio);border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;}
+.logo-text{color:#fff;font-size:12px;line-height:1.3;}
+.logo-text strong{display:block;font-size:14px;}
+.logo-text span{opacity:.55;font-size:10px;}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto;}
+.nav-section{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;padding:12px 12px 4px;margin-top:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;margin-bottom:2px;transition:.2s;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;}
+.nav-item svg{flex-shrink:0;}
+.nav-badge{background:var(--laranja);color:#fff;border-radius:12px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:auto;}
+.sidebar-user{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--verde-medio);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;}
+.user-name{font-size:12px;color:#fff;font-weight:600;line-height:1.3;}
+.user-role{font-size:10px;color:rgba(255,255,255,.5);}
+.btn-logout{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:rgba(255,255,255,.7);font-size:12px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;}
+.btn-logout:hover{background:rgba(192,57,43,.3);border-color:var(--vermelho);color:#fff;}
+@media(max-width:900px){.sidebar{width:60px;}.sidebar .logo-text,.sidebar .nav-item span,.nav-section,.sidebar-user .user-name,.sidebar-user .user-role,.btn-logout span,.nav-badge{display:none;}.main{margin-left:60px;}}
+
+/* ── MAIN ────────────────────────────────── */
+.main{margin-left:224px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:var(--branco);border-bottom:1px solid var(--cinza-borda);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-left{display:flex;flex-direction:column;}
+.page-title{font-size:17px;font-weight:800;color:var(--verde-escuro);}
+.page-sub{font-size:11px;color:var(--cinza-texto);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.update-info{font-size:11px;color:var(--cinza-texto);text-align:right;line-height:1.4;}
+.btn-update{background:var(--verde-escuro);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;}
+.btn-update:hover{background:var(--verde-medio);}
+.btn-update.loading svg{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.content{padding:26px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── KPI CARDS ───────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px;}
+.kpi-card{background:var(--branco);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--sombra);border-left:4px solid var(--verde-escuro);}
+.kpi-card.c-laranja{border-left-color:var(--laranja);}
+.kpi-card.c-azul{border-left-color:var(--azul);}
+.kpi-card.c-vermelho{border-left-color:var(--vermelho);}
+.kpi-card.c-verde{border-left-color:var(--verde-medio);}
+.kpi-label{font-size:10px;color:var(--cinza-texto);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.kpi-value{font-size:26px;font-weight:900;color:var(--verde-escuro);line-height:1;}
+.kpi-sub{font-size:11px;color:var(--cinza-texto);margin-top:5px;}
+
+/* ── PANELS / TABLES ─────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+.panel{background:var(--branco);border-radius:var(--radius);box-shadow:var(--sombra);overflow:hidden;margin-bottom:18px;}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--cinza-borda);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.panel-title{font-size:12px;font-weight:800;color:var(--verde-escuro);text-transform:uppercase;letter-spacing:.5px;}
+.panel-body{padding:18px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--verde-bg);}
+th{padding:9px 12px;text-align:left;font-size:10.5px;font-weight:800;color:var(--verde-escuro);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--cinza-borda);color:var(--texto-secundario);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafcfb;}
+
+/* ── BADGES ──────────────────────────────── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge-ativo,.badge-aprovada,.badge-agendada,.badge-admin{background:#d4edda;color:#1a5c35;}
+.badge-inativo,.badge-recusada,.badge-cancelada{background:#fde8e8;color:#8b1a1a;}
+.badge-pendente,.badge-em-andamento{background:#fef3e2;color:#7a4a00;}
+.badge-realizada,.badge-usuario{background:#e3f0fc;color:#1a4a7a;}
+
+/* ── BOTÕES ──────────────────────────────── */
+.btn{border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;font-family:inherit;}
+.btn-primary{background:var(--verde-escuro);color:#fff;}
+.btn-primary:hover{background:var(--verde-medio);}
+.btn-secondary{background:var(--cinza-bg);color:var(--texto-principal);border:1px solid var(--cinza-borda);}
+.btn-secondary:hover{background:var(--cinza-borda);}
+.btn-danger{background:#fde8e8;color:var(--vermelho);}
+.btn-danger:hover{background:var(--vermelho);color:#fff;}
+.btn-success{background:#d4edda;color:#1a5c35;}
+.btn-success:hover{background:var(--verde-medio);color:#fff;}
+.btn-laranja{background:var(--laranja);color:#fff;}
+.btn-laranja:hover{background:#cf6d17;}
+.btn-azul{background:var(--azul);color:#fff;}
+.btn-azul:hover{background:#1f6fa3;}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.btn-icon{padding:6px;background:var(--cinza-bg);border:1px solid var(--cinza-borda);border-radius:7px;cursor:pointer;font-size:14px;line-height:1;transition:.2s;}
+.btn-icon:hover{background:var(--cinza-borda);}
+
+/* ── FORMS ───────────────────────────────── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+textarea{min-height:90px;resize:vertical;}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.checkbox-item{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--cinza-borda);border-radius:8px;cursor:pointer;font-size:12px;transition:.2s;}
+.checkbox-item:hover{border-color:var(--verde-medio);background:var(--verde-bg);}
+.checkbox-item.selected{border-color:var(--verde-medio);background:var(--verde-bg);color:var(--verde-escuro);font-weight:700;}
+
+/* ── MODAL ───────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--branco);border-radius:14px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--cinza-borda);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--branco);z-index:1;}
+.modal-title{font-size:15px;font-weight:800;color:var(--verde-escuro);}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--cinza-texto);line-height:1;padding:2px 6px;border-radius:6px;}
+.modal-close:hover{background:#fde8e8;color:var(--vermelho);}
+.modal-body{padding:22px 24px;}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--cinza-borda);display:flex;justify-content:flex-end;gap:10px;}
+
+/* ── SOLICITAÇÃO CARDS ───────────────────── */
+.sol-card{background:var(--branco);border:1.5px solid var(--cinza-borda);border-radius:12px;padding:18px;margin-bottom:12px;box-shadow:var(--sombra);transition:.2s;}
+.sol-card:hover{border-color:var(--verde-claro);}
+.sol-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:10px;}
+.sol-rota{font-size:15px;font-weight:800;color:var(--verde-escuro);}
+.sol-meta{font-size:12px;color:var(--cinza-texto);margin-top:3px;}
+.sol-card-body{font-size:13px;color:var(--texto-secundario);line-height:1.7;}
+.sol-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--cinza-borda);}
+.sol-solicitante{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--cinza-texto);}
+.sol-actions{display:flex;gap:8px;}
+
+/* ── STATUS TIMELINE ─────────────────────── */
+.status-flow{display:flex;align-items:center;gap:0;margin:16px 0;}
+.sf-step{flex:1;text-align:center;position:relative;}
+.sf-step::before{content:'';position:absolute;top:13px;left:50%;right:-50%;height:2px;background:var(--cinza-borda);z-index:0;}
+.sf-step:last-child::before{display:none;}
+.sf-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--cinza-borda);background:var(--branco);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1;}
+.sf-dot.done{background:var(--verde-medio);border-color:var(--verde-medio);color:#fff;}
+.sf-dot.active{background:var(--laranja);border-color:var(--laranja);color:#fff;}
+.sf-dot.rejected{background:var(--vermelho);border-color:var(--vermelho);color:#fff;}
+.sf-label{font-size:10px;color:var(--cinza-texto);font-weight:600;}
+
+/* ── CALENDÁRIO ──────────────────────────── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-nav{display:flex;align-items:center;gap:8px;}
+.cal-btn{background:var(--cinza-bg);border:1px solid var(--cinza-borda);border-radius:7px;padding:5px 11px;cursor:pointer;font-size:16px;line-height:1;}
+.cal-month{font-size:15px;font-weight:800;color:var(--verde-escuro);min-width:170px;text-align:center;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dn{text-align:center;font-size:10px;font-weight:700;color:var(--cinza-texto);padding:7px 3px;text-transform:uppercase;}
+.cal-day{min-height:78px;border:1px solid var(--cinza-borda);border-radius:8px;padding:5px;cursor:pointer;transition:.2s;background:var(--branco);}
+.cal-day:hover{border-color:var(--verde-medio);background:var(--verde-bg);}
+.cal-day.om{background:var(--cinza-bg);opacity:.4;}
+.cal-day.today{border-color:var(--verde-medio);background:var(--verde-bg);}
+.cal-day.hv{border-left:3px solid var(--verde-medio);}
+.cal-dn2{font-size:11px;font-weight:800;margin-bottom:3px;}
+.cal-ev{background:var(--verde-escuro);color:#fff;border-radius:3px;padding:1px 4px;font-size:9px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cal-ev.o{background:var(--laranja);}
+.cal-ev.a{background:var(--azul);}
+
+/* ── VEICULO CARD ────────────────────────── */
+.vcard{background:var(--branco);border-radius:var(--radius);padding:16px;box-shadow:var(--sombra);border-top:4px solid var(--verde-escuro);}
+.vplaca{font-size:15px;font-weight:900;font-family:monospace;background:var(--verde-bg);display:inline-block;padding:3px 10px;border-radius:6px;margin-bottom:7px;color:var(--verde-escuro);}
+.km-wrap{margin-top:9px;}
+.km-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--cinza-texto);margin-bottom:3px;}
+.km-bar{height:7px;background:var(--cinza-borda);border-radius:4px;overflow:hidden;}
+.km-fill{height:100%;border-radius:4px;transition:.5s;}
+
+/* ── FILTROS ─────────────────────────────── */
+.filter-bar{background:var(--branco);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;box-shadow:var(--sombra);display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+.fg{flex:1;min-width:130px;}
+.fg label{font-size:10px;margin-bottom:4px;display:block;font-weight:700;text-transform:uppercase;color:var(--cinza-texto);}
+
+/* ── AVATAR / USER ───────────────────────── */
+.av{width:32px;height:32px;border-radius:50%;background:var(--verde-bg);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--verde-escuro);overflow:hidden;flex-shrink:0;}
+.uc{display:flex;align-items:center;gap:8px;}
+
+/* ── EMPTY / TOAST / LOADING ─────────────── */
+.empty{text-align:center;padding:40px 20px;color:var(--cinza-texto);}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.4;}
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--verde-escuro);color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.2);display:flex;align-items:center;gap:8px;animation:slideIn .3s ease;min-width:250px;}
+.toast.error{background:var(--vermelho);}
+.toast.warning{background:var(--laranja);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.ld{position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.ld.show{display:flex;}
+.spin{width:42px;height:42px;border:4px solid var(--cinza-borda);border-top-color:var(--verde-escuro);border-radius:50%;animation:spin .7s linear infinite;}
+.ld-text{font-size:13px;color:var(--cinza-texto);font-weight:600;}
+
+/* ── ALERT ───────────────────────────────── */
+.alert{padding:12px 16px;border-radius:9px;margin:12px 0;font-size:13px;display:flex;gap:10px;align-items:flex-start;}
+.alert-info{background:var(--verde-bg);border:1px solid #a3d4b5;color:var(--verde-escuro);}
+.alert-warning{background:#fef3e2;border:1px solid #fbd69e;color:#7a4a00;}
+.alert-danger{background:#fde8e8;border:1px solid #f5b7b7;color:#8b1a1a;}
+
+/* ── SENHA CHANGE ────────────────────────── */
+.perfil-card{background:var(--branco);border-radius:14px;padding:24px;box-shadow:var(--sombra);max-width:420px;}
+
+@media(max-width:900px){
+  .grid-2,.grid-2-1,.grid-3{grid-template-columns:1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .content{padding:16px;}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .topbar{padding:0 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="screen-login">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-logo">NJB</div>
+      <h1>Viagens Corporativas</h1>
+      <p>Sistema integrado de gestão e controle de viagens com Google Sheets.</p>
+    </div>
+    <div class="login-features">
+      <div class="login-feat"><div class="login-feat-icon">🚗</div><span>Agendamento e controle de viagens</span></div>
+      <div class="login-feat"><div class="login-feat-icon">📊</div><span>KPIs e relatórios operacionais</span></div>
+      <div class="login-feat"><div class="login-feat-icon">✅</div><span>Fluxo de aprovação de solicitações</span></div>
+      <div class="login-feat"><div class="login-feat-icon">🤖</div><span>Sugestões inteligentes com IA</span></div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-form-wrap">
+      <h2>Entrar no sistema</h2>
+      <p>Use seu e-mail e senha cadastrados pelo administrador.</p>
+      <div class="login-error" id="login-error"></div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-login" id="btn-login-submit" onclick="fazerLogin()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Entrar
+      </button>
+      <p style="font-size:11px;color:var(--cinza-texto);margin-top:20px;text-align:center;">
+        Não tem acesso? Solicite ao administrador do sistema.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="screen-app">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-box">
+        <div class="logo-sq">NJB</div>
+        <div class="logo-text"><strong>NJB</strong><span>Viagens Corp.</span></div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav">
+      <!-- Preenchido dinamicamente por perfil -->
+    </div>
+    <div class="sidebar-user">
+      <div class="user-info">
+        <div class="user-avatar" id="sb-avatar">?</div>
+        <div>
+          <div class="user-name" id="sb-nome">—</div>
+          <div class="user-role" id="sb-perfil">—</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="fazerLogout()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title" id="pg-title">Dashboard</div>
+        <div class="page-sub" id="pg-sub">Visão geral</div>
+      </div>
+      <div class="topbar-right">
+        <div class="update-info">
+          <div>Última atualização</div>
+          <div id="last-update" style="font-weight:700;color:var(--verde-escuro);">—</div>
+        </div>
+        <button class="btn-update" onclick="atualizarTudo()" id="btn-att">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          ATUALIZAR
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page" id="page-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label">Total Viagens</div><div class="kpi-value" id="kv-viagens">—</div><div class="kpi-sub">realizadas</div></div>
+          <div class="kpi-card c-laranja"><div class="kpi-label">KM Total</div><div class="kpi-value" id="kv-km">—</div><div class="kpi-sub">km percorridos</div></div>
+          <div class="kpi-card c-azul"><div class="kpi-label">Ocupação Média</div><div class="kpi-value" id="kv-ocup">—</div><div class="kpi-sub">% de passageiros</div></div>
+          <div class="kpi-card c-verde"><div class="kpi-label">Sol. Pendentes</div><div class="kpi-value" id="kv-pend">—</div><div class="kpi-sub">aguardando aprovação</div></div>
+          <div class="kpi-card c-vermelho"><div class="kpi-label">Sol. Aprovadas</div><div class="kpi-value" id="kv-aprov">—</div><div class="kpi-sub">este período</div></div>
+        </div>
+        <div class="grid-2-1">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Próximas Viagens</span><button class="btn btn-primary btn-sm admin-only" onclick="abrirModalViagem()">+ Agendar</button></div>
+            <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Data</th><th>Hora</th><th>Condutor</th><th>Veículo</th><th>Destino</th><th>Status</th><th class="admin-only">Ações</th></tr></thead><tbody id="tb-proximas"></tbody></table></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Top Destinos</span></div>
+            <div class="panel-body" id="dash-destinos"></div>
+          </div>
+        </div>
+        <div class="panel admin-only">
+          <div class="panel-header"><span class="panel-title">⏳ Solicitações Pendentes</span><button class="btn btn-secondary btn-sm" onclick="navigate('aprovacao')">Ver todas</button></div>
+          <div class="panel-body" id="dash-pendentes"></div>
+        </div>
+      </div>
+
+      <!-- ── SOLICITAR VIAGEM (usuário) ── -->
+      <div class="page" id="page-solicitar">
+        <div style="max-width:680px;">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">📋 Nova Solicitação de Viagem</span></div>
+            <div class="panel-body">
+              <div class="alert alert-info">💡 Preencha os dados abaixo. Sua solicitação será enviada para aprovação do administrador e você receberá um e-mail com a decisão.</div>
+              <div class="form-row" style="margin-top:16px;">
+                <div class="form-group"><label>Origem</label><select id="sol-origem"><option value="">Selecione...</option></select></div>
+                <div class="form-group"><label>Destino *</label><select id="sol-destino"><option value="">Selecione...</option></select></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Data da Viagem *</label><input type="date" id="sol-data"></div>
+                <div class="form-group"><label>Horário Preferencial</label><input type="time" id="sol-hora"></div>
+              </div>
+              <div class="form-group"><label>Passageiros (outros nomes, opcional)</label><input type="text" id="sol-passageiros" placeholder="Ex: João Silva, Maria Santos"></div>
+              <div class="form-group"><label>Justificativa *</label><textarea id="sol-justificativa" placeholder="Descreva o motivo da viagem, urgência, finalidade..."></textarea></div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;">
+                <button class="btn btn-secondary" onclick="limparFormSolicitacao()">Limpar</button>
+                <button class="btn btn-primary" onclick="enviarSolicitacao()">✈️ Enviar Solicitação</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MINHAS SOLICITAÇÕES (usuário) ── -->
+      <div class="page" id="page-minhas-sol">
+        <div id="lista-minhas-sol">
+          <div class="empty"><div class="empty-icon">📋</div><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- ── APROVAÇÃO (admin) ── -->
+      <div class="page" id="page-aprovacao">
+        <div class="filter-bar">
+          <div class="fg"><label>Status</label>
+            <select id="fil-sol-status">
+              <option value="">Todos</option>
+              <option value="PENDENTE" selected>Pendentes</option>
+              <option value="APROVADA">Aprovadas</option>
+              <option value="RECUSADA">Recusadas</option>
+              <option value="CANCELADA">Canceladas</option>
+            </select>
+          </div>
+          <div class="fg"><label>Data Início</label><input type="date" id="fil-sol-di"></div>
+          <div class="fg"><label>Data Fim</label><input type="date" id="fil-sol-df"></div>
+          <div class="fg" style="flex:0;align-self:flex-end;"><button class="btn btn-primary" onclick="carregarSolicitacoesAdmin()">Filtrar</button></div>
+        </div>
+        <div id="lista-aprovacao">
+          <div class="empty"><div class="empty-icon">📋</div><p>Carregando solicitações...</p></div>
+        </div>
+      </div>
+
+      <!-- ── CALENDÁRIO ── -->
+      <div class="page" id="page-calendario">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="cal-header" style="width:100%;margin:0;">
+              <div class="cal-nav">
+                <button class="cal-btn" onclick="calNav(-1)">&#8249;</button>
+                <div class="cal-month" id="cal-lbl">—</div>
+                <button class="cal-btn" onclick="calNav(1)">&#8250;</button>
+              </div>
+              <button class="btn btn-primary btn-sm admin-only" onclick="abrirModalViagem()">+ Nova Viagem</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="cal-grid" id="cal-names"></div>
+            <div class="cal-grid" id="cal-grid" style="margin-top:3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIAGENS (admin) ── -->
+      <div class="page" id="page-viagens">
+        <div class="filter-bar">
+          <div class="fg"><label>Data Início</label><input type="date" id="fv-di"></div>
+          <div class="fg"><label>Data Fim</label><input type="date" id="fv-df"></div>
+          <div class="fg"><label>Veículo</label><select id="fv-veiculo"><option value="">Todos</option></select></div>
+          <div class="fg"><label>Condutor</label><select id="fv-condutor"><option value="">Todos</option></select></div>
+          <div class="fg" style="flex:0;align-self:flex-end;display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="filtrarViagens()">Filtrar</button>
+            <button class="btn btn-secondary" onclick="limparFiltros()">Limpar</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Viagens</span><button class="btn btn-primary btn-sm" onclick="abrirModalViagem()">+ Agendar</button></div>
+          <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>Data</th><th>Hora</th><th>Condutor</th><th>Pass.</th><th>Veículo</th><th>Origem</th><th>Destino</th><th>KM</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb-viagens"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <!-- ── CONDUTORES ── -->
+      <div class="page" id="page-condutores">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Condutores & Passageiros</span><button class="btn btn-primary btn-sm" onclick="abrirModalCondutor()">+ Cadastrar</button></div>
+          <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>CPF</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb-condutores"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <!-- ── VEÍCULOS ── -->
+      <div class="page" id="page-veiculos">
+        <div id="grid-veiculos" class="grid-3"></div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Frota</span><button class="btn btn-primary btn-sm" onclick="abrirModalVeiculo()">+ Cadastrar</button></div>
+          <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>Placa</th><th>Modelo</th><th>KM Inicial</th><th>KM Atual</th><th>Ciclo</th><th>Ações</th></tr></thead><tbody id="tb-veiculos"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <!-- ── DESTINOS ── -->
+      <div class="page" id="page-destinos">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Destinos</span><button class="btn btn-primary btn-sm" onclick="abrirModal('modal-destino')">+ Destino</button></div>
+            <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>Ações</th></tr></thead><tbody id="tb-destinos"></tbody></table></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Distâncias</span><button class="btn btn-primary btn-sm" onclick="abrirModal('modal-distancia')">+ Distância</button></div>
+            <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Origem</th><th>Destino</th><th>KM</th><th>Ações</th></tr></thead><tbody id="tb-distancias"></tbody></table></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── USUÁRIOS (admin) ── -->
+      <div class="page" id="page-usuarios">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Gestão de Usuários</span><button class="btn btn-primary btn-sm" onclick="abrirModalUsuario()">+ Novo Usuário</button></div>
+          <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Último Login</th><th>Ações</th></tr></thead><tbody id="tb-usuarios"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <!-- ── IA ── -->
+      <div class="page" id="page-ia">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">🤖 Sugestões Inteligentes</span><button class="btn btn-laranja btn-sm" onclick="carregarSugestoes()">↻ Atualizar</button></div>
+          <div class="panel-body">
+            <p style="font-size:13px;color:var(--cinza-texto);margin-bottom:16px;">A IA analisa o histórico de viagens e identifica padrões para sugerir agendamentos automáticos.</p>
+            <div id="lista-ia"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RELATÓRIOS ── -->
+      <div class="page" id="page-relatorios">
+        <div class="filter-bar">
+          <div class="fg"><label>Início</label><input type="date" id="rl-di"></div>
+          <div class="fg"><label>Fim</label><input type="date" id="rl-df"></div>
+          <div class="fg"><label>Veículo</label><select id="rl-veiculo"><option value="">Todos</option></select></div>
+          <div class="fg"><label>Condutor</label><select id="rl-condutor"><option value="">Todos</option></select></div>
+          <div class="fg" style="flex:0;align-self:flex-end;"><button class="btn btn-primary" onclick="carregarRelatorio()">Gerar</button></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label">Viagens</div><div class="kpi-value" id="rl-v">—</div></div>
+          <div class="kpi-card c-laranja"><div class="kpi-label">KM Total</div><div class="kpi-value" id="rl-km">—</div></div>
+          <div class="kpi-card c-azul"><div class="kpi-label">KM Médio</div><div class="kpi-value" id="rl-km2">—</div></div>
+          <div class="kpi-card c-verde"><div class="kpi-label">Ocupação</div><div class="kpi-value" id="rl-oc">—</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-header"><span class="panel-title">KM por Veículo</span></div><div class="panel-body" id="rl-kmv"></div></div>
+          <div class="panel"><div class="panel-header"><span class="panel-title">Ranking Condutores</span></div><div class="panel-body" id="rl-rank"></div></div>
+        </div>
+      </div>
+
+      <!-- ── PERFIL ── -->
+      <div class="page" id="page-perfil">
+        <div class="grid-2" style="max-width:860px;">
+          <div class="perfil-card">
+            <h3 style="margin-bottom:16px;font-size:15px;">👤 Meus Dados</h3>
+            <div id="perfil-dados"></div>
+          </div>
+          <div class="perfil-card">
+            <h3 style="margin-bottom:16px;font-size:15px;">🔑 Alterar Senha</h3>
+            <div class="form-group"><label>Senha Atual</label><input type="password" id="p-atual" placeholder="••••••••"></div>
+            <div class="form-group"><label>Nova Senha</label><input type="password" id="p-nova" placeholder="mínimo 6 caracteres"></div>
+            <div class="form-group"><label>Confirmar Nova Senha</label><input type="password" id="p-conf" placeholder="repita a nova senha"></div>
+            <button class="btn btn-primary" onclick="alterarSenha()" style="width:100%;margin-top:4px;">Salvar Nova Senha</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /screen-app -->
+
+<!-- ══════════════════ MODAIS ══════════════════ -->
+
+<!-- Modal Viagem -->
+<div class="modal-overlay" id="modal-viagem">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="mv-title">Nova Viagem</div><button class="modal-close" onclick="fecharModal('modal-viagem')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="mv-id">
+      <div class="form-row"><div class="form-group"><label>Data *</label><input type="date" id="mv-data"></div><div class="form-group"><label>Hora *</label><input type="time" id="mv-hora"></div></div>
+      <div class="form-group"><label>Condutor *</label><select id="mv-condutor"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Passageiros (máx. 4)</label><div class="checkbox-group" id="mv-passageiros"></div></div>
+      <div class="form-group"><label>Veículo *</label><select id="mv-veiculo"><option value="">Selecione...</option></select></div>
+      <div class="form-row"><div class="form-group"><label>Origem *</label><select id="mv-origem"><option value="">Selecione...</option></select></div><div class="form-group"><label>Destino *</label><select id="mv-destino"><option value="">Selecione...</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label>KM</label><input type="number" id="mv-km" placeholder="auto" min="0"></div><div class="form-group"><label>Status</label><select id="mv-status"><option value="AGENDADA">Agendada</option><option value="EM ANDAMENTO">Em andamento</option><option value="REALIZADA">Realizada</option><option value="CANCELADA">Cancelada</option></select></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-viagem')">Cancelar</button><button class="btn btn-primary" onclick="salvarViagem()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Condutor -->
+<div class="modal-overlay" id="modal-condutor">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="mc-title">Cadastrar Condutor</div><button class="modal-close" onclick="fecharModal('modal-condutor')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="mc-id">
+      <div class="form-group"><label>Nome *</label><input type="text" id="mc-nome" placeholder="Nome completo"></div>
+      <div class="form-row"><div class="form-group"><label>CPF *</label><input type="text" id="mc-cpf" placeholder="000.000.000-00" maxlength="14"></div><div class="form-group"><label>Status</label><select id="mc-status"><option value="ATIVO">Ativo</option><option value="INATIVO">Inativo</option></select></div></div>
+      <div class="form-group"><label>URL da Foto</label><input type="url" id="mc-foto" placeholder="https://..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-condutor')">Cancelar</button><button class="btn btn-primary" onclick="salvarCondutor()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Veículo -->
+<div class="modal-overlay" id="modal-veiculo">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Cadastrar Veículo</div><button class="modal-close" onclick="fecharModal('modal-veiculo')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="mve-id">
+      <div class="form-row"><div class="form-group"><label>Placa *</label><input type="text" id="mve-placa" placeholder="ABC-1234" maxlength="8"></div><div class="form-group"><label>Modelo *</label><input type="text" id="mve-modelo" placeholder="Ex: Toyota Hilux 2023"></div></div>
+      <div class="form-row"><div class="form-group"><label>KM Inicial *</label><input type="number" id="mve-kmi" placeholder="0" min="0"></div><div class="form-group"><label>KM Atual</label><input type="number" id="mve-kma" placeholder="0" min="0"></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-veiculo')">Cancelar</button><button class="btn btn-primary" onclick="salvarVeiculo()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Destino -->
+<div class="modal-overlay" id="modal-destino">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header"><div class="modal-title">Novo Destino</div><button class="modal-close" onclick="fecharModal('modal-destino')">×</button></div>
+    <div class="modal-body"><div class="form-group"><label>Nome *</label><input type="text" id="md-nome" placeholder="Ex: MOSSORÓ - RN"></div></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-destino')">Cancelar</button><button class="btn btn-primary" onclick="salvarDestino()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Distância -->
+<div class="modal-overlay" id="modal-distancia">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><div class="modal-title">Cadastrar Distância</div><button class="modal-close" onclick="fecharModal('modal-distancia')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Origem *</label><select id="mdist-o"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Destino *</label><select id="mdist-d"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>KM *</label><input type="number" id="mdist-km" placeholder="0" min="1"></div>
+      <p style="font-size:11px;color:var(--cinza-texto);">✓ Cadastra automaticamente o caminho inverso.</p>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-distancia')">Cancelar</button><button class="btn btn-primary" onclick="salvarDistancia()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Usuário -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="mu-title">Novo Usuário</div><button class="modal-close" onclick="fecharModal('modal-usuario')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="mu-id">
+      <div class="form-group"><label>Nome Completo *</label><input type="text" id="mu-nome" placeholder="Nome completo"></div>
+      <div class="form-row"><div class="form-group"><label>E-mail *</label><input type="email" id="mu-email" placeholder="email@empresa.com"></div><div class="form-group"><label>Perfil</label><select id="mu-perfil"><option value="USUARIO">Usuário Comum</option><option value="ADMIN">Administrador</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label>Senha Temporária</label><input type="text" id="mu-senha" placeholder="Deixe em branco para gerar automaticamente"></div><div class="form-group"><label>Status</label><select id="mu-status"><option value="ATIVO">Ativo</option><option value="INATIVO">Inativo</option></select></div></div>
+      <div class="alert alert-info" id="mu-info" style="display:none;">📧 Um e-mail de boas-vindas com as credenciais será enviado automaticamente.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="fecharModal('modal-usuario')">Cancelar</button><button class="btn btn-primary" onclick="salvarUsuario()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Modal Decisão Solicitação -->
+<div class="modal-overlay" id="modal-decisao">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header"><div class="modal-title" id="mdec-title">Decidir Solicitação</div><button class="modal-close" onclick="fecharModal('modal-decisao')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="mdec-id">
+      <div id="mdec-info" style="margin-bottom:16px;"></div>
+      <div class="form-group" id="mdec-motivo-group" style="display:none;">
+        <label>Motivo da Recusa *</label>
+        <textarea id="mdec-motivo" placeholder="Informe o motivo para comunicar ao solicitante..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-success" style="flex:1;" onclick="confirmarDecisao('APROVAR')">✅ Aprovar</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="mostrarMotivoRecusa()">❌ Recusar</button>
+      </div>
+      <div id="mdec-confirmar-recusa" style="display:none;margin-top:10px;">
+        <button class="btn btn-danger" style="width:100%;" onclick="confirmarDecisao('RECUSAR')">Confirmar Recusa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalhes Dia -->
+<div class="modal-overlay" id="modal-dia">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header"><div class="modal-title" id="mdia-title">Viagens do Dia</div><button class="modal-close" onclick="fecharModal('modal-dia')">×</button></div>
+    <div class="modal-body" id="mdia-body"></div>
+    <div class="modal-footer"><button class="btn btn-primary admin-only" onclick="fecharModal('modal-dia');abrirModalViagem()">+ Nova Viagem</button><button class="btn btn-secondary" onclick="fecharModal('modal-dia')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="ld" id="ld"><div class="spin"></div><div class="ld-text">Carregando...</div></div>
+<!-- Toasts -->
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxk7R5vwnm0fpSeasSwPfKEPpWzjSbWr76KAUkyvFYx6SdneM0HyiF6BoHtM6E5VU-t/exec'; // 🔴 Substitua
+
+// ── ESTADO ─────────────────────────────────────────────
+let S = {
+  token: '', user: null,
+  condutores:[], veiculos:[], destinos:[], distancias:[], viagens:[], kpis:{}, usuarios:[],
+  calAno: new Date().getFullYear(), calMes: new Date().getMonth()
+};
+
+// ── API ─────────────────────────────────────────────────
+async function api(action, params={}) {
+  const url = new URL(SCRIPT_URL);
+  url.searchParams.set('action', action);
+  url.searchParams.set('token', S.token);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const r = await fetch(url.toString());
+  return r.json();
+}
+async function apiPost(action, data={}) {
+  const r = await fetch(SCRIPT_URL, {
+    method:'POST',
+    body: JSON.stringify({ action, token: S.token, ...data }),
+    headers: {'Content-Type':'application/json'}
+  });
+  return r.json();
+}
+
+// ── AUTH ────────────────────────────────────────────────
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const btn = document.getElementById('btn-login-submit');
+  const err = document.getElementById('login-error');
+  err.classList.remove('show');
+  if (!email || !senha) { err.textContent = 'Informe e-mail e senha.'; err.classList.add('show'); return; }
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+  try {
+const url = new URL(SCRIPT_URL);
+url.searchParams.set('action', 'login');
+url.searchParams.set('email', email);
+url.searchParams.set('senha', senha);
+const r = await fetch(url.toString()).then(x=>x.json());
+    if (!r.success) {
+      err.textContent = r.error || 'Erro ao fazer login.';
+      err.classList.add('show');
+    } else {
+      S.token = r.token;
+      S.user = r.user;
+      localStorage.setItem('njb_token', r.token);
+      localStorage.setItem('njb_user', JSON.stringify(r.user));
+      iniciarApp();
+    }
+  } catch(e) {
+    console.error('Erro fetch login:', e); // ← linha adicionada
+    err.textContent = 'Erro de conexão. Verifique a URL do Apps Script.';
+    err.classList.add('show');
+    // MODO DEMO
+    if (SCRIPT_URL.includes('SUA_URL')) {
+      S.user = { id:1, nome:'ADMINISTRADOR DEMO', email:'admin@demo.com', perfil:'ADMIN' };
+      S.token = 'demo';
+      iniciarAppDemo();
+    }
+  } finally { btn.textContent = 'Entrar'; btn.disabled = false; }
+}
+
+async function fazerLogout() {
+  if (S.token) await api('logout').catch(()=>{});
+  S.token = ''; S.user = null;
+  localStorage.removeItem('njb_token'); localStorage.removeItem('njb_user');
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-senha').value = '';
+}
+
+async function checkSessao() {
+  const token = localStorage.getItem('njb_token');
+  const user = localStorage.getItem('njb_user');
+  if (!token || !user) return;
+  S.token = token;
+  try {
+    const r = await api('checkToken');
+    if (r.valid) { S.user = r.user; iniciarApp(); }
+    else { localStorage.removeItem('njb_token'); localStorage.removeItem('njb_user'); }
+  } catch(e) {
+    // Demo
+    if (SCRIPT_URL.includes('SUA_URL')) { S.user = JSON.parse(user); S.token = token; iniciarAppDemo(); }
+  }
+}
+
+// ── INICIALIZAR APP ─────────────────────────────────────
+function iniciarApp() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').classList.add('active');
+  construirSidebar();
+  renderUserInfo();
+  atualizarTudo();
+}
+
+function iniciarAppDemo() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').classList.add('active');
+  construirSidebar();
+  renderUserInfo();
+  carregarDadosDemo();
+  toast('⚙️ Modo demonstração ativo. Configure a URL do Apps Script para usar dados reais.', 'warning');
+}
+
+function construirSidebar() {
+  const isAdmin = S.user?.perfil === 'ADMIN';
+  const nav = document.getElementById('sidebar-nav');
+  const icoPath = (d) => `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${d}</svg>`;
+  const ico = {
+    dash: icoPath('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'),
+    cal:  icoPath('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
+    viag: icoPath('<path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>'),
+    aprov:icoPath('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'),
+    cond: icoPath('<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>'),
+    vei:  icoPath('<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v5"/><circle cx="14" cy="17" r="3"/><circle cx="5" cy="17" r="3"/>'),
+    dest: icoPath('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>'),
+    usr:  icoPath('<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+    ia:   icoPath('<circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>'),
+    rel:  icoPath('<path d="M18 20V10M12 20V4M6 20v-6"/>'),
+    sol:  icoPath('<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>'),
+    mine: icoPath('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'),
+    perf: icoPath('<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+  };
+  const ni = (id, icone, lbl, badge='') => `<div class="nav-item" id="nav-${id}" onclick="navigate('${id}')">${icone}<span>${lbl}</span>${badge?`<span class="nav-badge" id="nb-${id}">${badge}</span>`:''}</div>`;
+
+  let html = '';
+  if (isAdmin) {
+    html += `<div class="nav-section">Principal</div>`;
+    html += ni('dashboard', ico.dash, 'Dashboard');
+    html += ni('aprovacao', ico.aprov, 'Aprovações', '0');
+    html += ni('calendario', ico.cal, 'Calendário');
+    html += ni('viagens', ico.viag, 'Viagens');
+    html += `<div class="nav-section">Cadastros</div>`;
+    html += ni('condutores', ico.cond, 'Condutores');
+    html += ni('veiculos', ico.vei, 'Veículos');
+    html += ni('destinos', ico.dest, 'Destinos');
+    html += ni('usuarios', ico.usr, 'Usuários');
+    html += `<div class="nav-section">Análise</div>`;
+    html += ni('ia', ico.ia, 'Sugestões IA');
+    html += ni('relatorios', ico.rel, 'Relatórios');
+  } else {
+    html += `<div class="nav-section">Principal</div>`;
+    html += ni('dashboard', ico.dash, 'Dashboard');
+    html += ni('solicitar', ico.sol, 'Solicitar Viagem');
+    html += ni('minhas-sol', ico.mine, 'Minhas Solicitações');
+    html += ni('calendario', ico.cal, 'Calendário');
+  }
+  html += `<div class="nav-section">Conta</div>`;
+  html += ni('perfil', ico.perf, 'Meu Perfil');
+  nav.innerHTML = html;
+}
+
+function renderUserInfo() {
+  if (!S.user) return;
+  document.getElementById('sb-nome').textContent = S.user.nome.split(' ').slice(0,2).join(' ');
+  document.getElementById('sb-perfil').textContent = S.user.perfil === 'ADMIN' ? 'Administrador' : 'Usuário';
+  document.getElementById('sb-avatar').textContent = S.user.nome[0];
+  // Oculta elementos admin-only para usuários comuns
+  const isAdmin = S.user.perfil === 'ADMIN';
+  document.querySelectorAll('.admin-only').forEach(el => { el.style.display = isAdmin ? '' : 'none'; });
+}
+
+// ── NAVEGAÇÃO ───────────────────────────────────────────
+const pageTitles = {
+  dashboard:'Dashboard|Visão geral', aprovacao:'Aprovações|Solicitações de viagem',
+  calendario:'Calendário|Viagens por data', viagens:'Viagens|Agendamentos',
+  condutores:'Condutores & Passageiros|Cadastro', veiculos:'Veículos|Frota corporativa',
+  destinos:'Destinos|Locais e distâncias', usuarios:'Usuários|Controle de acesso',
+  ia:'Sugestões IA|Inteligência artificial', relatorios:'Relatórios|KPIs e análises',
+  solicitar:'Solicitar Viagem|Nova solicitação', 'minhas-sol':'Minhas Solicitações|Acompanhamento',
+  perfil:'Meu Perfil|Dados e senha'
+};
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if (!el) return;
+  el.classList.add('active');
+  const navEl = document.getElementById('nav-'+page);
+  if (navEl) navEl.classList.add('active');
+  const [t,s] = (pageTitles[page]||page+'|').split('|');
+  document.getElementById('pg-title').textContent = t;
+  document.getElementById('pg-sub').textContent = s;
+  if (page==='viagens') renderTabelaViagens();
+  if (page==='condutores') renderCondutores();
+  if (page==='veiculos') renderVeiculos();
+  if (page==='destinos') renderDestinos();
+  if (page==='calendario') renderCalendario();
+  if (page==='ia') carregarSugestoes();
+  if (page==='relatorios') popularFiltrosRel();
+  if (page==='aprovacao') carregarSolicitacoesAdmin();
+  if (page==='minhas-sol') carregarMinhasSolicitacoes();
+  if (page==='usuarios') renderUsuarios();
+  if (page==='perfil') renderPerfil();
+}
+
+// ── ATUALIZAÇÃO ─────────────────────────────────────────
+async function atualizarTudo() {
+  const btn = document.getElementById('btn-att');
+  btn.classList.add('loading');
+  showLd();
+  try {
+    const [rc,rv,rd,rdist,rkpis,rviag] = await Promise.all([
+      api('getCondutores'), api('getVeiculos'), api('getDestinos'),
+      api('getDistancias'), api('getKPIs',{}), api('getViagens',{})
+    ]);
+    if(rc.success)    S.condutores  = rc.data;
+    if(rv.success)    S.veiculos    = rv.data;
+    if(rd.success)    S.destinos    = rd.data;
+    if(rdist.success) S.distancias  = rdist.data;
+    if(rkpis.success) S.kpis        = rkpis.data;
+    if(rviag.success) S.viagens     = rviag.data;
+    if(rc.code==='UNAUTHORIZED'||rv.code==='UNAUTHORIZED') { fazerLogout(); return; }
+    renderDashboard();
+    popularSelects();
+    document.getElementById('last-update').textContent = new Date().toLocaleString('pt-BR');
+    // Badge aprovações
+    if (S.user?.perfil==='ADMIN' && S.kpis?.solicitacoes) {
+      const nb = document.getElementById('nb-aprovacao');
+      if (nb) nb.textContent = S.kpis.solicitacoes.pendentes || '0';
+    }
+  } catch(e) { toast('Erro ao conectar. Verifique a URL.','error'); }
+  finally { btn.classList.remove('loading'); hideLd(); }
+}
+
+// ── DASHBOARD ───────────────────────────────────────────
+function renderDashboard() {
+  const k = S.kpis;
+  if (!k) return;
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('kv-viagens', k.totalViagens??'—');
+  set('kv-km', k.totalKm ? Number(k.totalKm).toLocaleString('pt-BR') : '—');
+  set('kv-ocup', k.ocupacaoMedia ? k.ocupacaoMedia+'%' : '—');
+  set('kv-pend', k.solicitacoes?.pendentes??'—');
+  set('kv-aprov', k.solicitacoes?.aprovadas??'—');
+
+  // Top destinos
+  const td = document.getElementById('dash-destinos');
+  if (td && k.topDestinos?.length) {
+    const max = k.topDestinos[0].count;
+    td.innerHTML = k.topDestinos.map(d=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="flex:1;margin-right:10px;">
+          <div style="font-size:12px;font-weight:700;margin-bottom:3px;">${d.destino}</div>
+          <div style="height:5px;background:var(--cinza-borda);border-radius:4px;overflow:hidden;">
+            <div style="width:${(d.count/max*100).toFixed(0)}%;height:100%;background:var(--laranja);border-radius:4px;"></div>
+          </div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--laranja);">${d.count}x</span>
+      </div>`).join('');
+  }
+
+  // Próximas viagens
+  const proximas = S.viagens.filter(v=>v.status!=='CANCELADA'&&v.status!=='REALIZADA').slice(0,6);
+  const isAdmin = S.user?.perfil==='ADMIN';
+  document.getElementById('tb-proximas').innerHTML = proximas.length ? proximas.map(v=>`
+    <tr>
+      <td>${v.data}</td><td>${v.hora}</td>
+      <td><div class="uc"><div class="av">${(v.condutor_nome||'?')[0]}</div>${v.condutor_nome}</div></td>
+      <td style="font-family:monospace;font-weight:700;">${v.veiculo_placa}</td>
+      <td>${v.destino}</td>
+      <td><span class="badge badge-${(v.status||'').toLowerCase().replace(' ','-')}">${v.status}</span></td>
+      <td style="display:${isAdmin?'':'none'};">
+        <button class="btn-icon" onclick="editarViagem(${v.id})">✏️</button>
+        <button class="btn-icon" onclick="excluirViagem(${v.id})">🗑</button>
+      </td>
+    </tr>`).join('') :
+    '<tr><td colspan="7"><div class="empty"><div class="empty-icon">🚗</div><p>Sem viagens agendadas</p></div></td></tr>';
+
+  // Pendentes para admin
+  if (isAdmin) {
+    const pendentes = []; // Serão carregados na página de aprovação
+    const dp = document.getElementById('dash-pendentes');
+    if (dp) dp.innerHTML = k.solicitacoes?.pendentes > 0
+      ? `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--cinza-bg);border-radius:8px;">
+          <span style="font-size:24px;">⏳</span>
+          <div><div style="font-weight:700;">${k.solicitacoes.pendentes} solicitação(ões) aguardando sua decisão</div>
+          <div style="font-size:12px;color:var(--cinza-texto);">Clique em "Ver todas" para aprovar ou recusar.</div></div>
+         </div>`
+      : '<div class="empty"><div class="empty-icon">✅</div><p>Nenhuma solicitação pendente</p></div>';
+  }
+}
+
+// ── SOLICITAÇÕES ────────────────────────────────────────
+async function enviarSolicitacao() {
+  const data = {
+    origem: document.getElementById('sol-origem').value,
+    destino: document.getElementById('sol-destino').value,
+    data_viagem: document.getElementById('sol-data').value,
+    hora_viagem: document.getElementById('sol-hora').value,
+    passageiros_nomes: document.getElementById('sol-passageiros').value,
+    justificativa: document.getElementById('sol-justificativa').value,
+  };
+  if (!data.destino || !data.data_viagem || !data.justificativa) {
+    toast('Destino, data e justificativa são obrigatórios.','warning'); return;
+  }
+  showLd();
+  const r = await apiPost('salvarSolicitacao', { data }).catch(()=>({success:false,error:'Erro'}));
+  hideLd();
+  if (r.success) { toast(r.message); limparFormSolicitacao(); navigate('minhas-sol'); }
+  else toast(r.error,'error');
+}
+
+function limparFormSolicitacao() {
+  ['sol-origem','sol-destino'].forEach(id => document.getElementById(id).value='');
+  ['sol-data','sol-hora','sol-passageiros','sol-justificativa'].forEach(id => document.getElementById(id).value='');
+}
+
+async function carregarMinhasSolicitacoes() {
+  showLd();
+  const r = await api('getSolicitacoes').catch(()=>({success:false}));
+  hideLd();
+  const lista = document.getElementById('lista-minhas-sol');
+  if (!r.success || !r.data?.length) {
+    lista.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Você ainda não fez nenhuma solicitação. <a href="#" onclick="navigate(\'solicitar\')" style="color:var(--verde-medio);">Solicitar viagem</a></p></div>';
+    return;
+  }
+  lista.innerHTML = r.data.map(s => renderSolCard(s, false)).join('');
+}
+
+async function carregarSolicitacoesAdmin() {
+  const params = {
+    status: document.getElementById('fil-sol-status')?.value || 'PENDENTE',
+    dataInicio: document.getElementById('fil-sol-di')?.value || '',
+    dataFim: document.getElementById('fil-sol-df')?.value || '',
+  };
+  showLd();
+  const r = await api('getSolicitacoes', params).catch(()=>({success:false}));
+  hideLd();
+  const lista = document.getElementById('lista-aprovacao');
+  if (!r.success || !r.data?.length) {
+    lista.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nenhuma solicitação encontrada.</p></div>';
+    return;
+  }
+  lista.innerHTML = r.data.map(s => renderSolCard(s, true)).join('');
+  // Atualiza badge
+  const nb = document.getElementById('nb-aprovacao');
+  if (nb) nb.textContent = r.data.filter(s=>s.status==='PENDENTE').length || '0';
+}
+
+function renderSolCard(s, isAdmin) {
+  const statusColors = { PENDENTE:'badge-pendente', APROVADA:'badge-aprovada', RECUSADA:'badge-recusada', CANCELADA:'badge-cancelada' };
+  const steps = [
+    { lbl:'Enviada', done: true },
+    { lbl:'Em análise', done: s.status!=='PENDENTE', active: s.status==='PENDENTE' },
+    { lbl: s.status==='RECUSADA'?'Recusada':'Aprovada', done: s.status==='APROVADA', active: false, rejected: s.status==='RECUSADA' }
+  ];
+  const timeline = `<div class="status-flow">${steps.map(st=>`
+    <div class="sf-step">
+      <div class="sf-dot ${st.done?'done':st.active?'active':st.rejected?'rejected':''}">${st.done?'✓':st.active?'⏳':st.rejected?'✗':'○'}</div>
+      <div class="sf-label">${st.lbl}</div>
+    </div>`).join('')}</div>`;
+
+  const actions = isAdmin && s.status==='PENDENTE'
+    ? `<div class="sol-actions"><button class="btn btn-sm btn-success" onclick="abrirDecisao(${s.id})">Decidir</button></div>`
+    : s.status==='PENDENTE'
+    ? `<button class="btn btn-sm btn-danger" onclick="cancelarSol(${s.id})">Cancelar</button>`
+    : '';
+
+  return `<div class="sol-card">
+    <div class="sol-card-header">
+      <div><div class="sol-rota">📍 ${s.origem||'—'} → ${s.destino}</div>
+        <div class="sol-meta">#${s.id} · 📅 ${s.data_viagem} ${s.hora_viagem?'às '+s.hora_viagem:''} · Criado: ${s.criado_em}</div>
+      </div>
+      <span class="badge ${statusColors[s.status]||''}">${s.status}</span>
+    </div>
+    ${timeline}
+    <div class="sol-card-body">
+      ${isAdmin?`<div style="margin-bottom:6px;">👤 <strong>Solicitante:</strong> ${s.solicitante_nome} (${s.solicitante_email})</div>`:''}
+      ${s.passageiros_nomes?`<div>👥 <strong>Passageiros:</strong> ${s.passageiros_nomes}</div>`:''}
+      ${s.justificativa?`<div style="margin-top:8px;padding:10px 12px;background:var(--cinza-bg);border-radius:8px;font-size:12px;">📝 ${s.justificativa}</div>`:''}
+      ${s.motivo_recusa?`<div style="margin-top:8px;padding:10px 12px;background:#fde8e8;border-radius:8px;font-size:12px;color:var(--vermelho);">❌ Motivo da recusa: ${s.motivo_recusa}</div>`:''}
+      ${s.admin_decisor?`<div style="margin-top:6px;font-size:11px;color:var(--cinza-texto);">Decidido por: ${s.admin_decisor} ${s.decidido_em?'em '+s.decidido_em:''}</div>`:''}
+    </div>
+    <div class="sol-card-footer">
+      <div class="sol-solicitante"></div>
+      ${actions}
+    </div>
+  </div>`;
+}
+
+async function cancelarSol(id) {
+  if (!confirm('Cancelar esta solicitação?')) return;
+  const r = await apiPost('cancelarSolicitacao', { id }).catch(()=>({success:false}));
+  if (r.success) { toast('Solicitação cancelada.'); carregarMinhasSolicitacoes(); }
+  else toast(r.error||'Erro','error');
+}
+
+function abrirDecisao(id) {
+  const s = null; // Busca no array se disponível
+  document.getElementById('mdec-id').value = id;
+  document.getElementById('mdec-title').textContent = 'Decidir Solicitação #' + id;
+  document.getElementById('mdec-motivo').value = '';
+  document.getElementById('mdec-motivo-group').style.display = 'none';
+  document.getElementById('mdec-confirmar-recusa').style.display = 'none';
+  document.getElementById('mdec-info').innerHTML = `<div class="alert alert-info">Você está prestes a tomar uma decisão sobre a solicitação <strong>#${id}</strong>. O solicitante receberá um e-mail com o resultado.</div>`;
+  abrirModal('modal-decisao');
+}
+
+function mostrarMotivoRecusa() {
+  document.getElementById('mdec-motivo-group').style.display = 'block';
+  document.getElementById('mdec-confirmar-recusa').style.display = 'block';
+}
+
+async function confirmarDecisao(acao) {
+  const id = document.getElementById('mdec-id').value;
+  const motivo = document.getElementById('mdec-motivo').value;
+  if (acao==='RECUSAR' && !motivo.trim()) { toast('Informe o motivo da recusa.','warning'); return; }
+  showLd();
+  const r = await apiPost('decidirSolicitacao', { id, decisao: acao, motivo }).catch(()=>({success:false,error:'Erro'}));
+  hideLd();
+  if (r.success) {
+    toast(r.message);
+    fecharModal('modal-decisao');
+    carregarSolicitacoesAdmin();
+    await atualizarTudo();
+  } else toast(r.error,'error');
+}
+
+// ── CALENDÁRIO ──────────────────────────────────────────
+function renderCalendario() {
+  const {calAno:ano, calMes:mes} = S;
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('cal-lbl').textContent = `${meses[mes]} ${ano}`;
+  document.getElementById('cal-names').innerHTML = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'].map(d=>`<div class="cal-dn">${d}</div>`).join('');
+  const primeiro=new Date(ano,mes,1).getDay(), diasMes=new Date(ano,mes+1,0).getDate(), diasAnt=new Date(ano,mes,0).getDate();
+  const hoje=new Date(), hojeStr=`${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
+  let html='';
+  for(let i=0;i<primeiro;i++) html+=`<div class="cal-day om"><div class="cal-dn2">${diasAnt-primeiro+1+i}</div></div>`;
+  for(let d=1;d<=diasMes;d++){
+    const ds=`${String(d).padStart(2,'0')}/${String(mes+1).padStart(2,'0')}/${ano}`;
+    const vd=S.viagens.filter(v=>v.data===ds);
+    html+=`<div class="cal-day${ds===hojeStr?' today':''}${vd.length?' hv':''}" onclick="abrirDia('${ds}')">
+      <div class="cal-dn2">${d}</div>
+      ${vd.slice(0,3).map((v,i)=>`<div class="cal-ev${i===1?' o':i===2?' a':''}">${v.hora} ${v.destino}</div>`).join('')}
+      ${vd.length>3?`<div style="font-size:9px;color:var(--cinza-texto);">+${vd.length-3}</div>`:''}
+    </div>`;
+  }
+  const resto=(primeiro+diasMes)%7; if(resto) for(let i=1;i<=7-resto;i++) html+=`<div class="cal-day om"><div class="cal-dn2">${i}</div></div>`;
+  document.getElementById('cal-grid').innerHTML = html;
+}
+function calNav(d){ S.calMes+=d; if(S.calMes>11){S.calMes=0;S.calAno++;}if(S.calMes<0){S.calMes=11;S.calAno--;} renderCalendario(); }
+function abrirDia(ds){
+  const vd=S.viagens.filter(v=>v.data===ds);
+  document.getElementById('mdia-title').textContent='Viagens de '+ds;
+  document.getElementById('mdia-body').innerHTML = vd.length
+    ? vd.map(v=>`<div style="border:1px solid var(--cinza-borda);border-radius:10px;padding:14px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:17px;font-weight:900;">${v.hora}</span>
+          <span class="badge badge-${(v.status||'').toLowerCase().replace(' ','-')}">${v.status}</span>
+        </div>
+        <div style="font-size:13px;color:var(--texto-secundario);">🚗 <strong>${v.veiculo_placa}</strong> &nbsp;|&nbsp; 👤 ${v.condutor_nome} &nbsp;|&nbsp; 📍 ${v.origem} → ${v.destino} &nbsp;|&nbsp; 📏 ${v.km} km</div>
+      </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma viagem neste dia.</p></div>';
+  abrirModal('modal-dia');
+}
+
+// ── RENDER TABELAS ──────────────────────────────────────
+function renderTabelaViagens(lista){
+  const viagens=lista||S.viagens;
+  document.getElementById('tb-viagens').innerHTML = viagens.length ? viagens.map(v=>`
+    <tr><td style="font-weight:700;color:var(--cinza-texto);">#${v.id}</td>
+    <td>${v.data}</td><td>${v.hora}</td>
+    <td><div class="uc"><div class="av">${(v.condutor_nome||'?')[0]}</div>${v.condutor_nome}</div></td>
+    <td>${v.passageiros?.length||0}</td>
+    <td style="font-family:monospace;font-weight:700;">${v.veiculo_placa}</td>
+    <td>${v.origem}</td><td>${v.destino}</td><td>${v.km} km</td>
+    <td><span class="badge badge-${(v.status||'').toLowerCase().replace(' ','-')}">${v.status}</span></td>
+    <td style="white-space:nowrap;"><button class="btn-icon" onclick="editarViagem(${v.id})">✏️</button> <button class="btn-icon" onclick="excluirViagem(${v.id})">🗑</button></td>
+    </tr>`).join('') : '<tr><td colspan="11"><div class="empty"><div class="empty-icon">🚗</div><p>Sem viagens</p></div></td></tr>';
+}
+function renderCondutores(){
+  document.getElementById('tb-condutores').innerHTML = S.condutores.length ? S.condutores.map(c=>`
+    <tr><td><div class="uc"><div class="av">${c.nome[0]}</div>${c.id}</div></td>
+    <td style="font-weight:600;">${c.nome}</td><td style="font-family:monospace;">${c.cpf}</td>
+    <td><span class="badge badge-${c.status.toLowerCase()}">${c.status}</span></td>
+    <td><button class="btn-icon" onclick="editarCondutor(${c.id})">✏️</button> <button class="btn-icon" onclick="excluirCondutor(${c.id})">🗑</button></td>
+    </tr>`).join('') : '<tr><td colspan="5"><div class="empty">Nenhum condutor</div></td></tr>';
+}
+function renderVeiculos(){
+  const grid=document.getElementById('grid-veiculos');
+  grid.innerHTML=S.veiculos.map(v=>{
+    const pct=Math.min((v.km_ciclo/2000)*100,100).toFixed(0);
+    const cor=pct<60?'var(--verde-medio)':pct<85?'var(--laranja)':'var(--vermelho)';
+    return `<div class="vcard"><div class="vplaca">${v.placa}</div>
+      <div style="font-size:12px;color:var(--cinza-texto);">${v.modelo}</div>
+      <div class="km-wrap"><div class="km-lbl"><span>Ciclo: ${v.km_ciclo.toLocaleString('pt-BR')} km</span><span>${pct}%</span></div>
+      <div class="km-bar"><div class="km-fill" style="width:${pct}%;background:${cor};"></div></div>
+      <div class="km-lbl" style="margin-top:3px;"><span>KM Atual: ${v.km_atual.toLocaleString('pt-BR')}</span><span>Limite: 2.000</span></div></div></div>`;
+  }).join('');
+  document.getElementById('tb-veiculos').innerHTML = S.veiculos.length ? S.veiculos.map(v=>`
+    <tr><td style="font-weight:700;color:var(--cinza-texto);">${v.id}</td>
+    <td style="font-family:monospace;font-weight:800;">${v.placa}</td>
+    <td>${v.modelo}</td>
+    <td>${v.km_inicial.toLocaleString('pt-BR')}</td>
+    <td>${v.km_atual.toLocaleString('pt-BR')}</td>
+    <td style="color:${v.km_ciclo>=2000?'var(--vermelho)':'var(--verde-medio)'};font-weight:700;">${v.km_ciclo.toLocaleString('pt-BR')} km</td>
+    <td><button class="btn-icon" onclick="editarVeiculo(${v.id})">✏️</button> <button class="btn-icon" onclick="excluirVeiculo(${v.id})">🗑</button></td>
+    </tr>`).join('') : '<tr><td colspan="7"><div class="empty">Sem veículos</div></td></tr>';
+}
+function renderDestinos(){
+  document.getElementById('tb-destinos').innerHTML=S.destinos.map(d=>`
+    <tr><td style="font-weight:700;color:var(--cinza-texto);">${d.id}</td><td>${d.nome}</td>
+    <td><button class="btn-icon" onclick="excluirDestino(${d.id})">🗑</button></td></tr>`).join('') || '<tr><td colspan="3"><div class="empty">Nenhum destino</div></td></tr>';
+  document.getElementById('tb-distancias').innerHTML=S.distancias.map(d=>`
+    <tr><td>${d.origem}</td><td>${d.destino}</td><td>${d.km} km</td>
+    <td><button class="btn-icon" onclick="excluirDistancia(${d.id})">🗑</button></td></tr>`).join('') || '<tr><td colspan="4"><div class="empty">Nenhuma distância</div></td></tr>';
+}
+function renderUsuarios(){
+  document.getElementById('tb-usuarios').innerHTML = S.usuarios.length ? S.usuarios.map(u=>`
+    <tr><td style="font-weight:700;color:var(--cinza-texto);">${u.id}</td>
+    <td><div class="uc"><div class="av">${u.nome[0]}</div><span style="font-weight:600;">${u.nome}</span></div></td>
+    <td>${u.email}</td>
+    <td><span class="badge badge-${u.perfil.toLowerCase()}">${u.perfil==='ADMIN'?'Administrador':'Usuário'}</span></td>
+    <td><span class="badge badge-${u.status.toLowerCase()}">${u.status}</span></td>
+    <td style="font-size:12px;">${u.ultimo_login||'—'}</td>
+    <td style="white-space:nowrap;">
+      <button class="btn-icon" onclick="editarUsuario(${u.id})" title="Editar">✏️</button>
+      <button class="btn-icon" onclick="resetarSenha(${u.id})" title="Reset senha">🔑</button>
+      <button class="btn-icon" onclick="excluirUsuario(${u.id})" title="Excluir">🗑</button>
+    </td></tr>`).join('') : '<tr><td colspan="7"><div class="empty">Nenhum usuário</div></td></tr>';
+}
+function renderPerfil(){
+  if (!S.user) return;
+  document.getElementById('perfil-dados').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+      <div class="av" style="width:52px;height:52px;font-size:20px;">${S.user.nome[0]}</div>
+      <div><div style="font-weight:800;font-size:16px;">${S.user.nome}</div><div style="font-size:12px;color:var(--cinza-texto);">${S.user.email}</div></div>
+    </div>
+    <div style="display:grid;gap:8px;font-size:13px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--cinza-borda);">
+        <span style="color:var(--cinza-texto);">Perfil de acesso</span>
+        <span class="badge badge-${S.user.perfil.toLowerCase()}">${S.user.perfil==='ADMIN'?'Administrador':'Usuário'}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;">
+        <span style="color:var(--cinza-texto);">E-mail</span><span style="font-weight:600;">${S.user.email}</span>
+      </div>
+    </div>`;
+}
+
+// ── SELECTS ─────────────────────────────────────────────
+function popularSelects(){
+  const condAtivos = S.condutores.filter(c=>c.status==='ATIVO');
+  const sel=(id,opts)=>{ const el=document.getElementById(id); if(el){ el.innerHTML=opts; } };
+  const optsCond = '<option value="">Selecione...</option>'+condAtivos.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  const optsVei  = '<option value="">Selecione...</option>'+S.veiculos.map(v=>`<option value="${v.id}">${v.placa} — ${v.modelo}</option>`).join('');
+  const optsDest = '<option value="">Selecione...</option>'+S.destinos.map(d=>`<option value="${d.nome}">${d.nome}</option>`).join('');
+  sel('mv-condutor',optsCond); sel('mv-veiculo',optsVei);
+  sel('mv-origem',optsDest); sel('mv-destino',optsDest);
+  sel('sol-origem',optsDest); sel('sol-destino',optsDest);
+  sel('mdist-o',optsDest); sel('mdist-d',optsDest);
+  const optsAll='<option value="">Todos</option>'+S.veiculos.map(v=>`<option value="${v.id}">${v.placa}</option>`).join('');
+  const optsCAll='<option value="">Todos</option>'+S.condutores.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  sel('fv-veiculo',optsAll); sel('fv-condutor',optsCAll);
+  sel('rl-veiculo',optsAll); sel('rl-condutor',optsCAll);
+  // Passageiros checkboxes
+  const mpEl = document.getElementById('mv-passageiros');
+  if(mpEl) mpEl.innerHTML = condAtivos.map(c=>`<div class="checkbox-item" data-id="${c.id}" onclick="togglePass(this)"><span>${c.nome.split(' ').slice(0,2).join(' ')}</span></div>`).join('');
+}
+function togglePass(el){
+  const sel=document.querySelectorAll('#mv-passageiros .checkbox-item.selected');
+  if(!el.classList.contains('selected')&&sel.length>=4){toast('Máximo 4 passageiros.','warning');return;}
+  el.classList.toggle('selected');
+}
+
+// ── CRUD VIAGENS ─────────────────────────────────────────
+function abrirModalViagem(){
+  document.getElementById('mv-id').value='';
+  document.getElementById('mv-title').textContent='Nova Viagem';
+  ['mv-data','mv-hora','mv-km'].forEach(id=>document.getElementById(id).value='');
+  ['mv-condutor','mv-veiculo','mv-origem','mv-destino'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mv-status').value='AGENDADA';
+  document.querySelectorAll('#mv-passageiros .checkbox-item').forEach(el=>el.classList.remove('selected'));
+  abrirModal('modal-viagem');
+}
+async function salvarViagem(){
+  const id=document.getElementById('mv-id').value;
+  const pass=Array.from(document.querySelectorAll('#mv-passageiros .checkbox-item.selected')).map(el=>el.dataset.id);
+  const d={data:document.getElementById('mv-data').value,hora:document.getElementById('mv-hora').value,condutor_id:document.getElementById('mv-condutor').value,passageiros:pass,veiculo_id:document.getElementById('mv-veiculo').value,origem:document.getElementById('mv-origem').value,destino:document.getElementById('mv-destino').value,km:document.getElementById('mv-km').value,status:document.getElementById('mv-status').value};
+  if(!d.data||!d.hora||!d.condutor_id||!d.veiculo_id||!d.origem||!d.destino){toast('Preencha todos os campos obrigatórios.','warning');return;}
+  showLd();
+  const r=id?await apiPost('updateViagem',{data:{...d,id}}):await apiPost('saveViagem',{data:d});
+  hideLd();
+  if(r.success){toast(r.message);fecharModal('modal-viagem');await atualizarTudo();}else toast(r.error,'error');
+}
+async function editarViagem(id){
+  showLd();
+  const r=await api('getViagemById',{id});
+  hideLd();
+  if(!r.success){toast(r.error,'error');return;}
+  const v=r.data; abrirModalViagem();
+  setTimeout(()=>{
+    document.getElementById('mv-id').value=v.id;
+    document.getElementById('mv-title').textContent='Editar Viagem #'+v.id;
+    const p=v.data.split('/');
+    if(p.length===3)document.getElementById('mv-data').value=`${p[2]}-${p[1]}-${p[0]}`;
+    document.getElementById('mv-hora').value=v.hora;
+    document.getElementById('mv-condutor').value=v.condutor_id;
+    document.getElementById('mv-veiculo').value=v.veiculo_id;
+    document.getElementById('mv-origem').value=v.origem;
+    document.getElementById('mv-destino').value=v.destino;
+    document.getElementById('mv-km').value=v.km;
+    document.getElementById('mv-status').value=v.status;
+    if(v.passageiros)v.passageiros.forEach(pid=>{const el=document.querySelector(`#mv-passageiros [data-id="${pid}"]`);if(el)el.classList.add('selected');});
+  },80);
+}
+async function excluirViagem(id){if(!confirm('Excluir esta viagem?'))return;const r=await apiPost('deleteViagem',{id}).catch(()=>({success:false}));if(r.success){toast('Excluída!');await atualizarTudo();}else toast(r.error||'Erro','error');}
+
+// ── CRUD CONDUTORES ──────────────────────────────────────
+function abrirModalCondutor(){document.getElementById('mc-id').value='';document.getElementById('mc-title').textContent='Cadastrar Condutor';['mc-nome','mc-cpf','mc-foto'].forEach(id=>document.getElementById(id).value='');document.getElementById('mc-status').value='ATIVO';abrirModal('modal-condutor');}
+async function salvarCondutor(){const id=document.getElementById('mc-id').value;const d={nome:document.getElementById('mc-nome').value,cpf:document.getElementById('mc-cpf').value,status:document.getElementById('mc-status').value,foto:document.getElementById('mc-foto').value};if(!d.nome||!d.cpf){toast('Nome e CPF obrigatórios.','warning');return;}showLd();const r=id?await apiPost('updateCondutor',{data:{...d,id}}):await apiPost('saveCondutor',{data:d});hideLd();if(r.success){toast(r.message);fecharModal('modal-condutor');await atualizarTudo();renderCondutores();}else toast(r.error,'error');}
+function editarCondutor(id){const c=S.condutores.find(x=>x.id==id);if(!c)return;abrirModalCondutor();setTimeout(()=>{document.getElementById('mc-id').value=c.id;document.getElementById('mc-title').textContent='Editar Condutor';document.getElementById('mc-nome').value=c.nome;document.getElementById('mc-cpf').value=c.cpf;document.getElementById('mc-status').value=c.status;document.getElementById('mc-foto').value=c.foto||'';},50);}
+async function excluirCondutor(id){if(!confirm('Excluir?'))return;const r=await apiPost('deleteCondutor',{id}).catch(()=>({success:false}));if(r.success){toast('Excluído!');await atualizarTudo();renderCondutores();}else toast(r.error||'Erro','error');}
+
+// ── CRUD VEÍCULOS ────────────────────────────────────────
+function abrirModalVeiculo(){document.getElementById('mve-id').value='';['mve-placa','mve-modelo','mve-kmi','mve-kma'].forEach(id=>document.getElementById(id).value='');abrirModal('modal-veiculo');}
+async function salvarVeiculo(){const id=document.getElementById('mve-id').value;const d={placa:document.getElementById('mve-placa').value,modelo:document.getElementById('mve-modelo').value,km_inicial:document.getElementById('mve-kmi').value,km_atual:document.getElementById('mve-kma').value||document.getElementById('mve-kmi').value};if(!d.placa||!d.modelo){toast('Placa e modelo obrigatórios.','warning');return;}showLd();const r=id?await apiPost('updateVeiculo',{data:{...d,id}}):await apiPost('saveVeiculo',{data:d});hideLd();if(r.success){toast(r.message);fecharModal('modal-veiculo');await atualizarTudo();renderVeiculos();}else toast(r.error,'error');}
+function editarVeiculo(id){const v=S.veiculos.find(x=>x.id==id);if(!v)return;abrirModalVeiculo();setTimeout(()=>{document.getElementById('mve-id').value=v.id;document.getElementById('mve-placa').value=v.placa;document.getElementById('mve-modelo').value=v.modelo;document.getElementById('mve-kmi').value=v.km_inicial;document.getElementById('mve-kma').value=v.km_atual;},50);}
+async function excluirVeiculo(id){if(!confirm('Excluir?'))return;const r=await apiPost('deleteVeiculo',{id}).catch(()=>({success:false}));if(r.success){toast('Excluído!');await atualizarTudo();renderVeiculos();}else toast(r.error||'Erro','error');}
+
+// ── CRUD DESTINOS ────────────────────────────────────────
+async function salvarDestino(){const nome=document.getElementById('md-nome').value.trim();if(!nome){toast('Informe o nome.','warning');return;}const r=await apiPost('saveDestino',{data:{nome}}).catch(()=>({success:false}));if(r.success){toast(r.message);fecharModal('modal-destino');await atualizarTudo();renderDestinos();}else toast(r.error||'Erro','error');}
+async function excluirDestino(id){if(!confirm('Excluir?'))return;const r=await apiPost('deleteDestino',{id}).catch(()=>({success:false}));if(r.success){toast('Excluído!');await atualizarTudo();renderDestinos();}else toast(r.error||'Erro','error');}
+async function salvarDistancia(){const d={origem:document.getElementById('mdist-o').value,destino:document.getElementById('mdist-d').value,km:document.getElementById('mdist-km').value};if(!d.origem||!d.destino||!d.km){toast('Preencha todos.','warning');return;}const r=await apiPost('saveDistancia',{data:d}).catch(()=>({success:false}));if(r.success){toast(r.message);fecharModal('modal-distancia');await atualizarTudo();renderDestinos();}else toast(r.error||'Erro','error');}
+async function excluirDistancia(id){if(!confirm('Excluir?'))return;const r=await apiPost('deleteDistancia',{id}).catch(()=>({success:false}));if(r.success){toast('Excluído!');await atualizarTudo();renderDestinos();}else toast(r.error||'Erro','error');}
+
+// ── CRUD USUÁRIOS ────────────────────────────────────────
+function abrirModalUsuario(){document.getElementById('mu-id').value='';document.getElementById('mu-title').textContent='Novo Usuário';['mu-nome','mu-email','mu-senha'].forEach(id=>document.getElementById(id).value='');document.getElementById('mu-perfil').value='USUARIO';document.getElementById('mu-status').value='ATIVO';document.getElementById('mu-info').style.display='block';abrirModal('modal-usuario');}
+async function salvarUsuario(){
+  const id=document.getElementById('mu-id').value;
+  const d={nome:document.getElementById('mu-nome').value,email:document.getElementById('mu-email').value,perfil:document.getElementById('mu-perfil').value,status:document.getElementById('mu-status').value,senha:document.getElementById('mu-senha').value};
+  if(!d.nome||!d.email){toast('Nome e e-mail obrigatórios.','warning');return;}
+  showLd();
+  const r=id?await apiPost('updateUsuario',{data:{...d,id}}):await apiPost('saveUsuario',{data:d});
+  hideLd();
+  if(r.success){toast(r.message);fecharModal('modal-usuario');const ru=await api('getUsuarios');if(ru.success)S.usuarios=ru.data;renderUsuarios();}else toast(r.error,'error');
+}
+function editarUsuario(id){const u=S.usuarios.find(x=>x.id==id);if(!u)return;abrirModalUsuario();setTimeout(()=>{document.getElementById('mu-id').value=u.id;document.getElementById('mu-title').textContent='Editar Usuário';document.getElementById('mu-nome').value=u.nome;document.getElementById('mu-email').value=u.email;document.getElementById('mu-perfil').value=u.perfil;document.getElementById('mu-status').value=u.status;document.getElementById('mu-info').style.display='none';},50);}
+async function excluirUsuario(id){if(!confirm('Excluir usuário?'))return;const r=await apiPost('deleteUsuario',{id}).catch(()=>({success:false}));if(r.success){toast('Excluído!');const ru=await api('getUsuarios');if(ru.success)S.usuarios=ru.data;renderUsuarios();}else toast(r.error||'Erro','error');}
+async function resetarSenha(id){if(!confirm('Resetar senha? O usuário receberá uma nova senha por e-mail.'))return;const r=await apiPost('resetSenha',{id}).catch(()=>({success:false}));if(r.success)toast('Senha resetada e enviada por e-mail!');else toast(r.error||'Erro','error');}
+async function carregarUsuarios(){const r=await api('getUsuarios').catch(()=>({success:false}));if(r.success){S.usuarios=r.data;renderUsuarios();}}
+
+// ── SENHA ────────────────────────────────────────────────
+async function alterarSenha(){
+  const sa=document.getElementById('p-atual').value,sn=document.getElementById('p-nova').value,sc=document.getElementById('p-conf').value;
+  if(!sa||!sn||!sc){toast('Preencha todos os campos.','warning');return;}
+  if(sn!==sc){toast('As novas senhas não coincidem.','warning');return;}
+  if(sn.length<6){toast('A nova senha deve ter pelo menos 6 caracteres.','warning');return;}
+  showLd();
+  const r=await apiPost('alterarSenhaPropria',{senhaAtual:sa,novaSenha:sn}).catch(()=>({success:false}));
+  hideLd();
+  if(r.success){toast(r.message);['p-atual','p-nova','p-conf'].forEach(id=>document.getElementById(id).value='');}else toast(r.error,'error');
+}
+
+// ── FILTROS ──────────────────────────────────────────────
+async function filtrarViagens(){
+  showLd();
+  const r=await api('getViagens',{dataInicio:document.getElementById('fv-di').value,dataFim:document.getElementById('fv-df').value,veiculo:document.getElementById('fv-veiculo').value,condutor:document.getElementById('fv-condutor').value}).catch(()=>({success:false}));
+  hideLd();
+  if(r.success)renderTabelaViagens(r.data);else toast('Erro ao filtrar','error');
+}
+function limparFiltros(){['fv-di','fv-df'].forEach(id=>document.getElementById(id).value='');['fv-veiculo','fv-condutor'].forEach(id=>document.getElementById(id).value='');renderTabelaViagens();}
+
+// ── IA ───────────────────────────────────────────────────
+async function carregarSugestoes(){
+  showLd();
+  const r=await api('getSugestoes').catch(()=>({success:false}));
+  hideLd();
+  const lista=document.getElementById('lista-ia');
+  if(!r.success||!r.data?.length){lista.innerHTML=`<div class="empty"><div class="empty-icon">🤖</div><p>${r.message||'Sem sugestões.'}</p></div>`;return;}
+  lista.innerHTML=r.data.map(s=>`
+    <div style="background:var(--branco);border:1.5px solid var(--cinza-borda);border-radius:10px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--sombra);">
+      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">📍 ${s.origem} → ${s.destino}</div>
+        <div style="font-size:12px;color:var(--cinza-texto);margin-top:3px;">${s.diaSemana} às ${s.hora} · ${s.frequencia}x/semana</div></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="text-align:center;">
+          <div style="font-size:12px;color:var(--cinza-texto);">Confiança</div>
+          <div style="font-weight:800;font-size:16px;color:var(--verde-medio);">${s.confianca}%</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="agendarSugestao(${JSON.stringify(s).replace(/"/g,'&quot;')})">+ Agendar</button>
+      </div>
+    </div>`).join('');
+}
+function agendarSugestao(s){abrirModalViagem();setTimeout(()=>{['mv-condutor','mv-veiculo'].forEach(id=>{const el=document.getElementById(id);if(el&&s[id.replace('mv-','').replace('-','_')+'_sugerido'])el.value=s[id.replace('mv-','').replace('-','_')+'_sugerido'];});document.getElementById('mv-origem').value=s.origem;document.getElementById('mv-destino').value=s.destino;document.getElementById('mv-hora').value=s.hora;},100);toast('Sugestão carregada! Preencha data e confirme.');}
+
+// ── RELATÓRIOS ───────────────────────────────────────────
+function popularFiltrosRel(){const s=(id,opts)=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;};s('rl-veiculo','<option value="">Todos</option>'+S.veiculos.map(v=>`<option value="${v.id}">${v.placa}</option>`).join(''));s('rl-condutor','<option value="">Todos</option>'+S.condutores.map(c=>`<option value="${c.id}">${c.nome}</option>`).join(''));}
+async function carregarRelatorio(){
+  showLd();
+  const r=await api('getKPIs',{dataInicio:document.getElementById('rl-di').value,dataFim:document.getElementById('rl-df').value,veiculo:document.getElementById('rl-veiculo').value,condutor:document.getElementById('rl-condutor').value}).catch(()=>({success:false}));
+  hideLd();
+  if(!r.success){toast('Erro','error');return;}
+  const k=r.data;
+  document.getElementById('rl-v').textContent=k.totalViagens;
+  document.getElementById('rl-km').textContent=Number(k.totalKm).toLocaleString('pt-BR');
+  document.getElementById('rl-km2').textContent=k.kmMedio+' km';
+  document.getElementById('rl-oc').textContent=k.ocupacaoMedia+'%';
+  const maxKm=Math.max(...Object.values(k.kmPorVeiculo||{1:1}));
+  document.getElementById('rl-kmv').innerHTML=Object.entries(k.kmPorVeiculo||{}).map(([pl,km])=>`
+    <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px;"><span style="font-family:monospace;font-weight:700;">${pl}</span><span style="font-weight:700;">${Number(km).toLocaleString('pt-BR')} km</span></div>
+    <div style="height:7px;background:var(--cinza-borda);border-radius:4px;overflow:hidden;"><div style="width:${(km/maxKm*100).toFixed(0)}%;height:100%;background:var(--verde-escuro);border-radius:4px;"></div></div></div>`).join('')||'<div class="empty">Sem dados</div>';
+  document.getElementById('rl-rank').innerHTML=k.rankingCondutores.map((c,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--cinza-borda);font-size:13px;">
+      <span style="font-weight:800;color:var(--cinza-texto);min-width:20px;">${i+1}.</span>
+      <span style="flex:1;">${c.nome}</span>
+      <span style="font-weight:800;color:var(--verde-escuro);">${c.viagens}x</span>
+    </div>`).join('')||'<div class="empty">Sem dados</div>';
+}
+
+// ── KM AUTO ──────────────────────────────────────────────
+document.getElementById('mv-origem').addEventListener('change',autoKm);
+document.getElementById('mv-destino').addEventListener('change',autoKm);
+function autoKm(){const o=document.getElementById('mv-origem').value,d=document.getElementById('mv-destino').value;if(o&&d){const dist=S.distancias.find(x=>x.origem===o&&x.destino===d);if(dist)document.getElementById('mv-km').value=dist.km;}}
+
+// ── MODAIS ───────────────────────────────────────────────
+function abrirModal(id){document.getElementById(id).classList.add('open');}
+function fecharModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ── MASKS ────────────────────────────────────────────────
+document.getElementById('mc-cpf').addEventListener('input',function(){let v=this.value.replace(/\D/g,'');v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');this.value=v;});
+document.getElementById('mc-nome').addEventListener('input',function(){const p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p,p);});
+document.getElementById('mve-placa').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+document.getElementById('login-senha').addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
+
+// ── LOADING / TOAST ──────────────────────────────────────
+function showLd(){document.getElementById('ld').classList.add('show');}
+function hideLd(){document.getElementById('ld').classList.remove('show');}
+function toast(msg,type='success'){
+  const w=document.getElementById('toasts'),el=document.createElement('div');
+  el.className='toast '+(type==='error'?'error':type==='warning'?'warning':'');
+  el.innerHTML=`<span>${{success:'✅',error:'❌',warning:'⚠️'}[type]||'✅'}</span> ${msg}`;
+  w.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='.3s';setTimeout(()=>el.remove(),300);},4000);
+}
+
+// ── DEMO DATA ────────────────────────────────────────────
+function carregarDadosDemo(){
+  S.kpis={totalViagens:42,totalKm:'3840',kmMedio:'91.4',ocupacaoMedia:68.5,totalPassageiros:115,rankingCondutores:[{nome:'CARLOS MELO',viagens:14},{nome:'ANA PAULA',viagens:11}],topDestinos:[{destino:'NATAL - RN',count:18},{destino:'FORTALEZA - CE',count:12}],solicitacoes:{total:8,pendentes:3,aprovadas:4,recusadas:1}};
+  S.viagens=[{id:1,data:'08/04/2026',hora:'08:00',condutor_nome:'CARLOS MELO',passageiros:['2'],veiculo_placa:'ABC-1234',origem:'MOSSORÓ - RN',destino:'NATAL - RN',km:280,status:'AGENDADA'},{id:2,data:'08/04/2026',hora:'14:00',condutor_nome:'ANA PAULA',passageiros:[],veiculo_placa:'XYZ-5678',origem:'MOSSORÓ - RN',destino:'FORTALEZA - CE',km:245,status:'AGENDADA'}];
+  S.condutores=[{id:1,nome:'CARLOS MELO',cpf:'123.456.789-00',status:'ATIVO',foto:''},{id:2,nome:'ANA PAULA',cpf:'987.654.321-00',status:'ATIVO',foto:''}];
+  S.veiculos=[{id:1,placa:'ABC-1234',modelo:'Toyota Hilux 2023',km_inicial:0,km_atual:1240,km_ciclo:1240},{id:2,placa:'XYZ-5678',modelo:'Chevrolet S10 2022',km_inicial:0,km_atual:890,km_ciclo:890}];
+  S.destinos=[{id:1,nome:'MOSSORÓ - RN'},{id:2,nome:'NATAL - RN'},{id:3,nome:'FORTALEZA - CE'}];
+  S.usuarios=[{id:1,nome:'ADMINISTRADOR DEMO',email:'admin@demo.com',perfil:'ADMIN',status:'ATIVO',criado_em:'01/01/2026',ultimo_login:'08/04/2026'}];
+  renderDashboard();
+  popularSelects();
+  document.getElementById('last-update').textContent=new Date().toLocaleString('pt-BR');
+  navigate('dashboard');
+}
+
+// ── BOOT ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  navigate('dashboard');
+  checkSessao();
+  document.getElementById('mu-id') && document.getElementById('mu-id').addEventListener('change',()=>{
+    document.getElementById('mu-info').style.display = document.getElementById('mu-id').value ? 'none' : 'block';
+  });
+});
+</script>
+</body>
+</html>
