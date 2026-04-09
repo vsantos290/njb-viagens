@@ -247,21 +247,39 @@ textarea{min-height:90px;resize:vertical;}
   .grid-2,.grid-2-1,.grid-3{grid-template-columns:1fr;}
   .form-row,.form-row-3{grid-template-columns:1fr;}
   .content{padding:16px;}
+  .perfil-card{max-width:100%;}
 }
 @media(max-width:600px){
   .kpi-grid{grid-template-columns:1fr 1fr;}
   .topbar{padding:0 14px;padding-left:56px;}
   .update-info{display:none;}
   .topbar-right{gap:8px;}
-  .modal{margin:8px;max-height:95vh;}
-  .modal-body{padding:16px;}
-  .modal-footer{padding:12px 16px;}
-  .panel-body{padding:12px;}
-  .filter-bar{padding:12px;}
-  .content{padding:12px;}
-  .kpi-value{font-size:22px;}
-  table{font-size:12px;}
-  th,td{padding:7px 8px;}
+  .modal{margin:8px;max-height:95vh;border-radius:10px;}
+  .modal-body{padding:14px 16px;}
+  .modal-footer{padding:10px 16px;flex-wrap:wrap;}
+  .modal-footer .btn{flex:1;justify-content:center;}
+  .panel-body{padding:10px;}
+  .filter-bar{padding:10px;gap:8px;}
+  .fg{min-width:100%;}
+  .content{padding:10px;}
+  .kpi-value{font-size:20px;}
+  .kpi-card{padding:12px 14px;}
+  table{font-size:11px;}
+  th,td{padding:6px 8px;}
+  .table-wrap{-webkit-overflow-scrolling:touch;}
+  .sol-card{padding:12px;}
+  .sol-rota{font-size:13px;}
+  .btn{padding:7px 12px;font-size:12px;}
+  .btn-sm{padding:4px 9px;font-size:11px;}
+  .topbar{height:54px;}
+  .page-title{font-size:15px;}
+  .nav-badge{display:inline-block!important;}
+}
+@media(min-width:901px) and (max-width:1280px){
+  .sidebar{width:200px;}
+  .main{margin-left:200px;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+  .content{padding:20px;}
 }
 </style>
 </head>
@@ -422,19 +440,11 @@ textarea{min-height:90px;resize:vertical;}
 
       <!-- ── APROVAÇÃO (admin) ── -->
       <div class="page" id="page-aprovacao">
-        <div class="filter-bar">
-          <div class="fg"><label>Status</label>
-            <select id="fil-sol-status">
-              <option value="">Todos</option>
-              <option value="PENDENTE" selected>Pendentes</option>
-              <option value="APROVADA">Aprovadas</option>
-              <option value="RECUSADA">Recusadas</option>
-              <option value="CANCELADA">Canceladas</option>
-            </select>
+        <div class="panel" style="margin-bottom:18px;">
+          <div class="panel-header">
+            <span class="panel-title">⏳ Solicitações Pendentes</span>
+            <button class="btn btn-secondary btn-sm" onclick="carregarSolicitacoesAdmin()">↻ Atualizar</button>
           </div>
-          <div class="fg"><label>Data Início</label><input type="date" id="fil-sol-di"></div>
-          <div class="fg"><label>Data Fim</label><input type="date" id="fil-sol-df"></div>
-          <div class="fg" style="flex:0;align-self:flex-end;"><button class="btn btn-primary" onclick="carregarSolicitacoesAdmin()">Filtrar</button></div>
         </div>
         <div id="lista-aprovacao">
           <div class="empty"><div class="empty-icon">📋</div><p>Carregando solicitações...</p></div>
@@ -917,7 +927,7 @@ function navigate(page) {
   if (page==='relatorios') popularFiltrosRel();
   if (page==='aprovacao') carregarSolicitacoesAdmin();
   if (page==='minhas-sol') carregarMinhasSolicitacoes();
-  if (page==='usuarios') renderUsuarios();
+  if (page==='usuarios') { carregarUsuarios(); }
   if (page==='perfil') renderPerfil();
 }
 
@@ -1065,15 +1075,18 @@ async function carregarMinhasSolicitacoes() {
 }
 
 async function carregarSolicitacoesAdmin() {
-  const statusVal = document.getElementById('fil-sol-status')?.value || '';
-  const params = {
-    dataInicio: document.getElementById('fil-sol-di')?.value || '',
-    dataFim: document.getElementById('fil-sol-df')?.value || '',
-  };
-  if (statusVal) params.status = statusVal;
   showLd();
-  const r = await api('getSolicitacoes', params).catch(()=>({success:false}));
+  const r = await api('getSolicitacoes', { status: 'PENDENTE' }).catch(()=>({success:false}));
   hideLd();
+  const lista = document.getElementById('lista-aprovacao');
+  if (!r.success || !r.data?.length) {
+    lista.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>Nenhuma solicitação pendente.</p></div>';
+    return;
+  }
+  lista.innerHTML = r.data.map(s => renderSolCard(s, true)).join('');
+  const nb = document.getElementById('nb-aprovacao');
+  if (nb) nb.textContent = r.data.length || '0';
+}
   const lista = document.getElementById('lista-aprovacao');
   if (!r.success || !r.data?.length) {
     lista.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nenhuma solicitação encontrada.</p></div>';
@@ -1342,21 +1355,33 @@ async function editarViagem(id){
   const r=await api('getViagemById',{id});
   hideLd();
   if(!r.success){toast(r.error,'error');return;}
-  const v=r.data; abrirModalViagem();
+  const v=r.data;
+  abrirModalViagem();
   setTimeout(()=>{
     document.getElementById('mv-id').value=v.id;
     document.getElementById('mv-title').textContent='Editar Viagem #'+v.id;
-    const p=v.data.split('/');
-    if(p.length===3)document.getElementById('mv-data').value=`${p[2]}-${p[1]}-${p[0]}`;
-    document.getElementById('mv-hora').value=v.hora;
-    document.getElementById('mv-condutor').value=v.condutor_id;
-    document.getElementById('mv-veiculo').value=v.veiculo_id;
-    document.getElementById('mv-origem').value=v.origem;
-    document.getElementById('mv-destino').value=v.destino;
-    document.getElementById('mv-km').value=v.km;
-    document.getElementById('mv-status').value=v.status;
-    if(v.passageiros)v.passageiros.forEach(pid=>{const el=document.querySelector(`#mv-passageiros [data-id="${pid}"]`);if(el)el.classList.add('selected');});
-  },80);
+    // Converte data dd/MM/yyyy → yyyy-MM-dd para o input type=date
+    if(v.data){
+      const p=String(v.data).trim().split('/');
+      if(p.length===3){
+        document.getElementById('mv-data').value=`${p[2].substring(0,4)}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+      }
+    }
+    // Hora: pega só HH:mm mesmo que venha com segundos
+    if(v.hora){
+      document.getElementById('mv-hora').value=String(v.hora).trim().substring(0,5);
+    }
+    document.getElementById('mv-condutor').value=v.condutor_id||'';
+    document.getElementById('mv-veiculo').value=v.veiculo_id||'';
+    document.getElementById('mv-origem').value=v.origem||'';
+    document.getElementById('mv-destino').value=v.destino||'';
+    document.getElementById('mv-km').value=v.km||'';
+    document.getElementById('mv-status').value=v.status||'AGENDADA';
+    if(v.passageiros)v.passageiros.forEach(pid=>{
+      const el=document.querySelector(`#mv-passageiros [data-id="${pid}"]`);
+      if(el)el.classList.add('selected');
+    });
+  },100);
 }
 async function excluirViagem(id){if(!confirm('Excluir esta viagem?'))return;const r=await apiPost('deleteViagem',{id}).catch(()=>({success:false}));if(r.success){toast('Excluída!');await atualizarTudo();}else toast(r.error||'Erro','error');}
 
