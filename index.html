@@ -44,7 +44,7 @@ input::placeholder{color:#bbb;}
 /* ── SIDEBAR ─────────────────────────────── */
 #screen-app{display:none;}
 #screen-app.active{display:flex;min-height:100vh;}
-.sidebar{position:fixed;top:0;left:0;width:224px;height:100vh;background:var(--verde-escuro);display:flex;flex-direction:column;z-index:100;transition:.3s;}
+.sidebar{position:fixed;top:0;left:0;height:100vh;background:var(--verde-escuro);display:flex;flex-direction:column;z-index:100;transition:.3s;}
 .sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
 .logo-box{display:flex;align-items:center;gap:10px;}
 .logo-sq{background:var(--verde-medio);border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;}
@@ -66,19 +66,64 @@ input::placeholder{color:#bbb;}
 .btn-logout{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:rgba(255,255,255,.7);font-size:12px;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;}
 .btn-logout:hover{background:rgba(192,57,43,.3);border-color:var(--vermelho);color:#fff;}
 /* ── MENU TOGGLE BUTTON ── */
-.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--verde-escuro);border:none;border-radius:8px;padding:8px;cursor:pointer;color:#fff;}
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--verde-escuro);border:none;border-radius:8px;padding:8px;cursor:pointer;color:#fff;align-items:center;justify-content:center;}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
 .sidebar-overlay.show{display:block;}
-@media(max-width:900px){
-  .menu-toggle{display:flex;align-items:center;justify-content:center;}
-  .sidebar{width:224px;transform:translateX(-100%);transition:.3s;}
+
+/* Mobile: sidebar vira drawer */
+@media(max-width:768px){
+  .menu-toggle{display:flex;}
+  .sidebar{width:240px;transform:translateX(-100%);transition:transform .3s;}
   .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0;}
-  .topbar{padding-left:60px;}
+  .main{margin-left:0!important;}
+  .topbar{padding-left:58px!important;}
+  .update-info{display:none;}
+  .grid-2,.grid-2-1,.grid-3{grid-template-columns:1fr!important;}
+  .form-row,.form-row-3{grid-template-columns:1fr!important;}
+  .kpi-grid{grid-template-columns:1fr 1fr!important;}
+  .content{padding:12px!important;}
+  .panel-body{padding:12px!important;}
+  .filter-bar{padding:10px!important;gap:8px!important;}
+  .fg{min-width:100%!important;}
+  .modal{margin:8px!important;max-height:95vh!important;}
+  .modal-body{padding:14px 16px!important;}
+  .modal-footer{padding:10px 16px!important;flex-wrap:wrap!important;}
+  .modal-footer .btn{flex:1;justify-content:center;}
+  .kpi-value{font-size:20px!important;}
+  .kpi-card{padding:12px 14px!important;}
+  table{font-size:11px!important;}
+  th,td{padding:6px 8px!important;}
+  .table-wrap{-webkit-overflow-scrolling:touch;}
+  .sol-card{padding:12px!important;}
+  .sol-rota{font-size:13px!important;}
+  .topbar{height:54px!important;}
+  .page-title{font-size:15px!important;}
+  .perfil-card{max-width:100%!important;}
+  .login-left{display:none!important;}
+  .login-right{width:100%!important;}
+}
+
+/* Tablet / notebook pequeno */
+@media(min-width:769px) and (max-width:1024px){
+  .sidebar{width:190px;}
+  .main{margin-left:190px;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+  .kpi-grid{grid-template-columns:repeat(3,1fr);}
+  .content{padding:18px;}
+}
+
+/* Desktop padrão */
+@media(min-width:1025px){
+  .sidebar{width:224px;}
+  .main{margin-left:224px;}
+}
+
+@media(max-width:400px){
+  .kpi-grid{grid-template-columns:1fr!important;}
 }
 
 /* ── MAIN ────────────────────────────────── */
-.main{margin-left:224px;min-height:100vh;display:flex;flex-direction:column;}
+.main{min-height:100vh;display:flex;flex-direction:column;}
 .topbar{background:var(--branco);border-bottom:1px solid var(--cinza-borda);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
 .topbar-left{display:flex;flex-direction:column;}
 .page-title{font-size:17px;font-weight:800;color:var(--verde-escuro);}
@@ -242,45 +287,6 @@ textarea{min-height:90px;resize:vertical;}
 
 /* ── SENHA CHANGE ────────────────────────── */
 .perfil-card{background:var(--branco);border-radius:14px;padding:24px;box-shadow:var(--sombra);max-width:420px;}
-
-@media(max-width:900px){
-  .grid-2,.grid-2-1,.grid-3{grid-template-columns:1fr;}
-  .form-row,.form-row-3{grid-template-columns:1fr;}
-  .content{padding:16px;}
-  .perfil-card{max-width:100%;}
-}
-@media(max-width:600px){
-  .kpi-grid{grid-template-columns:1fr 1fr;}
-  .topbar{padding:0 14px;padding-left:56px;}
-  .update-info{display:none;}
-  .topbar-right{gap:8px;}
-  .modal{margin:8px;max-height:95vh;border-radius:10px;}
-  .modal-body{padding:14px 16px;}
-  .modal-footer{padding:10px 16px;flex-wrap:wrap;}
-  .modal-footer .btn{flex:1;justify-content:center;}
-  .panel-body{padding:10px;}
-  .filter-bar{padding:10px;gap:8px;}
-  .fg{min-width:100%;}
-  .content{padding:10px;}
-  .kpi-value{font-size:20px;}
-  .kpi-card{padding:12px 14px;}
-  table{font-size:11px;}
-  th,td{padding:6px 8px;}
-  .table-wrap{-webkit-overflow-scrolling:touch;}
-  .sol-card{padding:12px;}
-  .sol-rota{font-size:13px;}
-  .btn{padding:7px 12px;font-size:12px;}
-  .btn-sm{padding:4px 9px;font-size:11px;}
-  .topbar{height:54px;}
-  .page-title{font-size:15px;}
-  .nav-badge{display:inline-block!important;}
-}
-@media(min-width:901px) and (max-width:1280px){
-  .sidebar{width:200px;}
-  .main{margin-left:200px;}
-  .grid-3{grid-template-columns:1fr 1fr;}
-  .content{padding:20px;}
-}
 </style>
 </head>
 <body>
@@ -753,7 +759,8 @@ async function fazerLogin() {
   const err = document.getElementById('login-error');
   err.classList.remove('show');
   if (!email || !senha) { err.textContent = 'Informe e-mail e senha.'; err.classList.add('show'); return; }
-  btn.textContent = 'Entrando...'; btn.disabled = true;
+  btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Entrando...';
+  btn.disabled = true;
   try {
 const url = new URL(SCRIPT_URL);
 url.searchParams.set('action', 'login');
@@ -780,7 +787,7 @@ const r = await fetch(url.toString()).then(x=>x.json());
       S.token = 'demo';
       iniciarAppDemo();
     }
-  } finally { btn.textContent = 'Entrar'; btn.disabled = false; }
+  } finally { btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Entrar'; btn.disabled = false; }
 }
 
 async function fazerLogout() {
@@ -946,6 +953,7 @@ async function atualizarTudo() {
       S.distancias = c.distancias || [];
       S.kpis       = c.kpis       || {};
       S.viagens    = c.viagens    || [];
+      S.usuarios   = c.usuarios   || [];
       renderDashboard();
       popularSelects();
     } catch(e) {}
@@ -962,10 +970,11 @@ async function atualizarTudo() {
       S.distancias = r.data.distancias || [];
       S.kpis       = r.data.kpis       || {};
       S.viagens    = r.data.viagens    || [];
+      S.usuarios   = r.data.usuarios   || [];
       if (r.code === 'UNAUTHORIZED') { fazerLogout(); return; }
       localStorage.setItem('njb_cache', JSON.stringify({
         condutores:S.condutores, veiculos:S.veiculos, destinos:S.destinos,
-        distancias:S.distancias, kpis:S.kpis, viagens:S.viagens
+        distancias:S.distancias, kpis:S.kpis, viagens:S.viagens, usuarios:S.usuarios
       }));
       renderDashboard();
       popularSelects();
