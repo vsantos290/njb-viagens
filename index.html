@@ -1496,20 +1496,28 @@ async function carregarRelatorio(){
 }
 
 // ── KM AUTO ──────────────────────────────────────────────
-document.getElementById('mv-origem').addEventListener('change',autoKm);
-document.getElementById('mv-destino').addEventListener('change',autoKm);
 function autoKm(){const o=document.getElementById('mv-origem').value,d=document.getElementById('mv-destino').value;if(o&&d){const dist=S.distancias.find(x=>x.origem===o&&x.destino===d);if(dist)document.getElementById('mv-km').value=dist.km;}}
 
 // ── MODAIS ───────────────────────────────────────────────
 function abrirModal(id){document.getElementById(id).classList.add('open');}
 function fecharModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
 // ── MASKS ────────────────────────────────────────────────
-document.getElementById('mc-cpf').addEventListener('input',function(){let v=this.value.replace(/\D/g,'');v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');this.value=v;});
-document.getElementById('mc-nome').addEventListener('input',function(){const p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p,p);});
-document.getElementById('mve-placa').addEventListener('input',function(){this.value=this.value.toUpperCase();});
-document.getElementById('login-senha').addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
+function aplicarMasks(){
+  const cpf = document.getElementById('mc-cpf');
+  if(cpf) cpf.addEventListener('input',function(){let v=this.value.replace(/\D/g,'');v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');this.value=v;});
+  const mcNome = document.getElementById('mc-nome');
+  if(mcNome) mcNome.addEventListener('input',function(){const p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p,p);});
+  const placa = document.getElementById('mve-placa');
+  if(placa) placa.addEventListener('input',function(){this.value=this.value.toUpperCase();});
+  const senha = document.getElementById('login-senha');
+  if(senha) senha.addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin();});
+  const mvOrigem = document.getElementById('mv-origem');
+  const mvDestino = document.getElementById('mv-destino');
+  if(mvOrigem) mvOrigem.addEventListener('change',autoKm);
+  if(mvDestino) mvDestino.addEventListener('change',autoKm);
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+}
 
 // ── LOADING / TOAST ──────────────────────────────────────
 function showLd(){document.getElementById('ld').classList.add('show');}
@@ -1538,6 +1546,7 @@ function carregarDadosDemo(){
 
 // ── BOOT ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
+  aplicarMasks();
   navigate('dashboard');
   checkSessao();
   document.getElementById('mu-id') && document.getElementById('mu-id').addEventListener('change',()=>{
