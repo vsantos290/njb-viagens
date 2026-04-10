@@ -1096,16 +1096,6 @@ async function carregarSolicitacoesAdmin() {
   const nb = document.getElementById('nb-aprovacao');
   if (nb) nb.textContent = r.data.length || '0';
 }
-  const lista = document.getElementById('lista-aprovacao');
-  if (!r.success || !r.data?.length) {
-    lista.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nenhuma solicitação encontrada.</p></div>';
-    return;
-  }
-  lista.innerHTML = r.data.map(s => renderSolCard(s, true)).join('');
-  // Atualiza badge
-  const nb = document.getElementById('nb-aprovacao');
-  if (nb) nb.textContent = r.data.filter(s=>s.status==='PENDENTE').length || '0';
-}
 
 function renderSolCard(s, isAdmin) {
   const statusColors = { PENDENTE:'badge-pendente', APROVADA:'badge-aprovada', RECUSADA:'badge-recusada', CANCELADA:'badge-cancelada' };
